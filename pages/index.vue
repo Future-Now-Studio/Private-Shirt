@@ -5,10 +5,10 @@
       <!-- Left side - White background with brand colors for text -->
       <div class="w-1/2 bg-white flex items-center justify-center p-8">
         <div class="max-w-xl">
-          <h1 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight mb-3">
-            <span class="text-[#D8127D]">Individuell</span> <span class="text-[#D8127D]">bedruckte</span> <span class="text-[#0a3a47]">Shirts & mehr</span> – in Premium-Qualität
+          <h1 class="text-5xl md:text-5xl font-extrabold leading-tight tracking-tight mb-3" style="font-size: 5rem; ">
+            <span class="text-[#D8127D]">Sei du selbst. sei einzigartig.</span> <span class="text-[#D8127D]"></span> <span class="text-[#0a3a47]"></span>
           </h1>
-          <p class="text-base md:text-xl font-light mb-6 text-[#0a3a47]">Für dich, dein Team oder dein Business – ab 1 Stück.</p>
+          <p class="text-base md:text-xl font-light mb-6 text-[#0a3a47]">gestalte ganz frei deinen look. t-shirts, sweatshirts, hoodies und vieles mehr. probier’s einfach!</p>
           <div class="flex flex-col sm:flex-row gap-4">
             <button class="btn bg-[#ffd44d] hover:bg-[#ffe28a] text-[#0a3a47] border-2 border-[#ffd44d]">Jetzt gestalten</button>
             <button @click="$emit('navigate', 'Grossbestellung')" class="btn border-2 border-[#D8127D] text-[#D8127D] hover:bg-[#D8127D] hover:text-white">Großbestellung anfragen</button>
