@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   
   // Configure for static generation (SSG) for Netlify deployment
   nitro: {
-    preset: 'netlify'
+    preset: 'static'
   },
 
   modules: [
