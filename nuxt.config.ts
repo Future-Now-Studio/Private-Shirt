@@ -1,6 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  
+  // Configure for static generation (SSG) for Netlify deployment
+  nitro: {
+    preset: 'netlify'
+  },
 
   modules: [
     ['@nuxtjs/tailwindcss', {
