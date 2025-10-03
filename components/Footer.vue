@@ -5,7 +5,7 @@
         <div class="col-span-2 md:col-span-4 lg:col-span-1 mb-6 lg:mb-0">
           <img src="/assets/group-25.svg" 
                alt="private-shirt.de Logo" 
-               class="h-8 mb-4 invert"
+               class="h-8 mb-4"
                @error="handleLogoError">
           <p class="text-white text-sm opacity-80">Dein Druck. Deine Idee. Dein Shirt.</p>
         </div>
@@ -71,7 +71,7 @@ const handleLogoError = (event) => {
 
 <style scoped>
 .footer-link {
-  @apply text-gray-400 hover:text-white transition-colors duration-200;
+  @apply text-gray-400 hover:text-[#D8127D] transition-colors duration-200;
 }
 </style>
   

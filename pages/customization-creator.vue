@@ -13,7 +13,7 @@
       <div class="container mx-auto px-6 py-8">
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <div v-for="p in designerProducts" :key="p.id" class="bg-white rounded-lg shadow hover:shadow-md transition cursor-pointer" @click="selectProduct(p)">
-            <img :src="p.image" :alt="p.name" class="w-full h-56 object-cover">
+            <img :src="p.image" :alt="p.name" class="w-full h-56 object-contain">
             <div class="p-4">
               <div class="font-semibold">{{ p.name }}</div>
               <div class="text-sm text-gray-500" v-if="p.price">ab {{ p.price }} €</div>
