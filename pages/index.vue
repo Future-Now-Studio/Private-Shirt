@@ -27,7 +27,7 @@
           playsinline
           @error="handleVideoError"
         >
-          <source src="/assets/video_psm.mp4" type="video/mp4">
+          <source src="/assets/Video_PSM.mp4" type="video/mp4">
         </video>
       </div>
     </section>
