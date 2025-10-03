@@ -2,13 +2,10 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
-  // Configure for Netlify with both static and serverless functions
+  // Configure for static generation
   nitro: {
-    preset: 'netlify'
+    preset: 'static'
   },
-  
-  // Enable static generation for better performance
-  ssr: false,
 
   modules: [
     ['@nuxtjs/tailwindcss', {
