@@ -6,7 +6,13 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Handle SPA routing - redirect all non-file requests to index.html
+# Don't redirect function requests
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Handle SPA routing - redirect all other requests to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
