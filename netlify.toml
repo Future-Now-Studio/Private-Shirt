@@ -1,12 +1,11 @@
 [build]
-  command = "npm run build"
-  publish = ".output/public"
-  functions = ".netlify/functions-internal"
+  command = "npm run generate"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# All routes go to index.html for SPA (API routes are handled by Netlify functions)
+# All routes go to index.html for SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -567,15 +567,6 @@ async function loadViaHTMLImage(url) {
 
 async function loadBackground(url) {
   if (!url) return false
-  // Prefer proxy first to avoid CORS entirely
-  const proxied = `/api/proxy?url=${encodeURIComponent(url)}`
-  let ok = await loadViaHTMLImage(proxied)
-  console.debug('[BG-TRY] proxy HTMLImage', proxied, ok)
-  if (ok) return true
-
-  ok = await loadBackgroundViaFabric(proxied, false)
-  console.debug('[BG-TRY] proxy Fabric', proxied, ok)
-  if (ok) return true
 
   // Then try direct paths
   ok = await loadViaHTMLImage(url)
