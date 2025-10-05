@@ -36,7 +36,7 @@
           <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div v-for="i in 9" :key="i" class="bg-white rounded-lg shadow-md overflow-hidden group">
               <div class="relative">
-                <img src="https://images.unsplash.com/photo-1622470953794-aa6976d05470?q=80&w=800&auto=format&fit=crop" alt="[Produktbild eines T-Shirts]" class="w-full h-auto">
+                <img src="/PW154_Bottle-Green-ca.-Pantone-560C.jpg" alt="Bottle Green T-Shirt" class="w-full h-auto">
                 <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <button class="btn btn-primary">Jetzt gestalten</button>
                 </div>

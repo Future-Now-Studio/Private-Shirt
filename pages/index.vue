@@ -1,23 +1,23 @@
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="relative h-[50vh] flex">
+    <section class="relative h-[60vh] md:h-[50vh] flex flex-col lg:flex-row">
       <!-- Left side - White background with brand colors for text -->
-      <div class="w-1/2 bg-white flex items-center justify-center p-8">
-        <div class="max-w-xl">
-          <h1 class="text-5xl md:text-5xl font-extrabold leading-tight tracking-tight mb-3" style="font-size: 5rem; ">
-            <span class="text-[#D8127D]">Sei du selbst. sei einzigartig.</span> <span class="text-[#D8127D]"></span> <span class="text-[#0a3a47]"></span>
+      <div class="w-full lg:w-1/2 bg-white flex items-center justify-center p-4 sm:p-6 lg:p-8 order-2 lg:order-1">
+        <div class="max-w-xl text-center lg:text-left">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-3">
+            <span class="text-[#D8127D]">Sei du selbst. sei einzigartig.</span>
           </h1>
-          <p class="text-base md:text-xl font-light mb-6 text-[#0a3a47]">gestalte ganz frei deinen look. t-shirts, sweatshirts, hoodies und vieles mehr. probier’s einfach!</p>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <button class="btn bg-[#ffd44d] hover:bg-[#ffe28a] text-[#0a3a47] border-2 border-[#ffd44d]">Jetzt gestalten</button>
-            <button @click="$emit('navigate', 'Grossbestellung')" class="btn border-2 border-[#D8127D] text-[#D8127D] hover:bg-[#D8127D] hover:text-white">Großbestellung anfragen</button>
+          <p class="text-sm sm:text-base md:text-lg lg:text-xl font-light mb-6 text-[#0a3a47]">gestalte ganz frei deinen look. t-shirts, sweatshirts, hoodies und vieles mehr. probir's einfach!</p>
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+            <button class="btn bg-[#ffd44d] hover:bg-[#ffe28a] text-[#0a3a47] border-2 border-[#ffd44d] text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3">Jetzt gestalten</button>
+            <button @click="$emit('navigate', 'Grossbestellung')" class="btn border-2 border-[#D8127D] text-[#D8127D] hover:bg-[#D8127D] hover:text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3">Großbestellung anfragen</button>
           </div>
         </div>
       </div>
       
       <!-- Right side - Video -->
-      <div class="w-1/2 relative overflow-hidden">
+      <div class="w-full lg:w-1/2 relative overflow-hidden h-48 sm:h-64 md:h-80 lg:h-full order-1 lg:order-2">
         <div class="absolute inset-0 bg-black/20 z-10"></div>
         <video 
           class="absolute inset-0 w-full h-full object-cover"

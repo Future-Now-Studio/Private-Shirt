@@ -199,16 +199,8 @@ const freeShippingProgress = computed(() => {
 
 // Methods
 const handleImageError = (event, category) => {
-  const fallbackImages = {
-    't-shirts': 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop',
-    'hoodies': 'https://images.unsplash.com/photo-1556156026-e01c89f5f19c?q=80&w=800&auto=format&fit=crop',
-    'tassen': 'https://images.unsplash.com/photo-1594225019830-798c8a1fe4a0?q=80&w=800&auto=format&fit=crop',
-    'stofftaschen': 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800&auto=format&fit=crop',
-    'caps': 'https://images.unsplash.com/photo-1521369909049-ecaf380c8536?q=80&w=800&auto=format&fit=crop',
-    'clothing': 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=800&auto=format&fit=crop',
-    'accessories': 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop'
-  }
-  event.target.src = fallbackImages[category] || fallbackImages.clothing
+  // Always use the local bottle green image as fallback
+  event.target.src = '/PW154_Bottle-Green-ca.-Pantone-560C.jpg'
 }
 
 const updateCartItemQuantity = (index, quantity) => {

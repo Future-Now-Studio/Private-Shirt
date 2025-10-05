@@ -74,15 +74,16 @@
             </div>
           </div>
           
-          <!-- Canvas Container -->
+          <!-- Canvas Container (Fabric mounts inside; background via CSS) -->
           <div class="relative rounded-lg overflow-hidden">
-            <canvas 
-              ref="canvasRef" 
-              class="w-full h-[600px] cursor-crosshair"
+            <div 
+              ref="canvasHost"
+              class="relative w-full h-[600px] cursor-crosshair bg-white"
+              :style="hostBgStyle"
               @keydown="onKeyDown"
               tabindex="0"
-            ></canvas>
-            <!-- Warning Message -->
+            ></div>
+            <!-- Warning Message - only for placement area validation -->
             <div v-if="showWarning" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-10">
               <div class="flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,16 +128,7 @@
             </div>
           </div>
 
-          <!-- Product Views (thumbnails) -->
-          <div v-if="productImages && productImages.length" class="mt-4">
-            <h3 class="font-semibold mb-2 text-[#0a3a47]">Ansichten</h3>
-            <div class="flex gap-2 overflow-x-auto pb-2">
-              <button v-for="(u, i) in productImages" :key="u" @click="currentViewIndex = i"
-                      :class="['rounded-md border', i === currentViewIndex ? 'ring-2 ring-[#D8127D] border-[#D8127D]' : 'border-gray-200']">
-                <img :src="u" :alt="'View ' + (i+1)" class="w-16 h-16 object-cover rounded-md" />
-              </button>
-            </div>
-          </div>
+          <!-- Product Views removed - always using local bottle green image -->
 
 
 
@@ -280,6 +272,7 @@ const props = defineProps({
 })
 
 const canvasRef = ref(null)
+const canvasHost = ref(null)
 const fileInput = ref(null)
 let canvas = null
 let fabric = null
@@ -289,7 +282,7 @@ let designLayer = null
 let clipPolygon = null
 const lastValidTransform = new WeakMap()
 let bgImageObj = null
-const DEFAULT_BG_URL = ''
+const DEFAULT_BG_URL = '/PW154_Bottle-Green-ca.-Pantone-560C.jpg'
 const router = useRouter()
 const { addToCart } = useCart()
 const showSizeModal = ref(false)
@@ -326,6 +319,12 @@ const hasDesign = ref(false)
 // Removed placement guide UI
 const showWarning = ref(false)
 const warningMessage = ref('')
+const hostBgStyle = computed(() => ({
+  backgroundImage: `url(${DEFAULT_BG_URL})`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'center',
+  backgroundSize: 'contain'
+}))
 const availableSizes = computed(() => {
   const sizes = ['S','M','L','XL','XXL']
   if (Object.keys(sizeQuantities.value).length === 0) {
@@ -369,20 +368,28 @@ const ensureFabric = async () => {
 
 // Init
 const initCanvas = async () => {
-  if (!canvasRef.value) return
+  if (!canvasHost.value) return
   await ensureFabric()
 
-  canvas = new fabric.Canvas(canvasRef.value, {
-    width: canvasRef.value.offsetWidth || 900,
+  // Mount Fabric Canvas inside the host div to avoid DOM insertBefore issues
+  const el = document.createElement('canvas')
+  el.setAttribute('role', 'img')
+  el.setAttribute('aria-label', 'Gestaltungsfläche')
+  el.tabIndex = 0
+  canvasHost.value.innerHTML = ''
+  canvasHost.value.appendChild(el)
+
+  canvas = new fabric.Canvas(el, {
+    width: canvasHost.value.offsetWidth || 900,
     height: 600,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     selection: true,
     preserveObjectStacking: true
   })
   canvas.perPixelTargetFind = false
   canvas.targetFindTolerance = 10
 
-  // Background will be set after canvas is ready
+  // We now use a static <img> element underneath as the background.
 
   // Hinweis: Wir fügen Design-Objekte direkt zum Canvas hinzu
   designLayer = null
@@ -437,57 +444,11 @@ const initCanvas = async () => {
   canvas.on('object:rotating', (e) => validateAndMaybeRevert(e.target))
 
   setupDragAndDrop()
-  // Ensure product background loads after canvas is ready
+  // Load product data (background handled by static <img>)
   await updateProductAndBackground(props.productId)
-  if (!bgImageObj) {
-    await setShirtBackground()
-  }
 }
 
-// Background (Mockup)
-async function loadBackgroundViaFabric(url, useCors) {
-  return new Promise((resolve) => {
-    if (!fabric || !canvas || !url) { resolve(false); return }
-    const options = useCors ? { crossOrigin: 'anonymous' } : undefined
-    
-    const timeout = setTimeout(() => {
-      console.warn('Fabric image timeout', url)
-      resolve(false)
-    }, 10000) // 10 second timeout
-    
-    fabric.Image.fromURL(url, (img) => {
-      clearTimeout(timeout)
-      if (!img) { 
-        console.warn('Fabric image failed to load', url)
-        resolve(false)
-        return 
-      }
-      try {
-        const scaleX = canvas.width / (img.width || 1)
-        const scaleY = canvas.height / (img.height || 1)
-        const uniform = Math.min(scaleX, scaleY)
-        img.set({ originX: 'left', originY: 'top', left: 0, top: 0, selectable: false, evented: false, scaleX: uniform, scaleY: uniform, name: 'BG_IMAGE' })
-        if (bgImageObj) { try { canvas.remove(bgImageObj) } catch {} }
-        bgImageObj = img
-        canvas.add(bgImageObj)
-        if (typeof bgImageObj.sendToBack === 'function') { bgImageObj.sendToBack() }
-        // ensure user-added elements stay above background after swap
-        bringDesignObjectsToFront()
-        canvas.requestRenderAll()
-        resolve(true)
-      } catch (e) { 
-        console.error('Error processing fabric image:', e, url)
-        resolve(false) 
-      }
-    }, options)
-  })
-}
-
-const setShirtBackground = async () => {
-  const stored = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage.getItem(`product:${props.productId}:image`) : null
-  const url = stored || DEFAULT_BG_URL
-  await loadBackground(url)
-}
+// Background handled by static <img> in template for simplicity
 
 // Product info
 const selectedProduct = ref(null)
@@ -499,132 +460,33 @@ const productDescription = computed(() => {
   try { return raw.replace(/<[^>]*>/g, '').trim() } catch { return raw }
 })
 
-function pickImage(product) {
-  const gal = (product && product.gallery) || []
-  const first = gal[0]
-  const galUrl = typeof first === 'string' ? first : (first && first.src)
-  return galUrl || product?.image || (product?.images && product.images[0]?.src) || null
-}
+// pickImage function removed - always using local bottle green image
 
 const { wooService, formatProduct } = useWooCommerce()
 
-async function loadBackgroundViaBlob(url) {
-  try {
-    const res = await fetch(url, { mode: 'cors' })
-    const blob = await res.blob()
-    const objectUrl = URL.createObjectURL(blob)
-    const ok = await loadBackgroundViaFabric(objectUrl, false)
-    setTimeout(() => URL.revokeObjectURL(objectUrl), 5000)
-    return ok
-  } catch {
-    return false
-  }
-}
 
-async function loadViaHTMLImage(url) {
-  return new Promise((resolve) => {
-    if (!canvas) { resolve(false); return }
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    try { img.referrerPolicy = 'no-referrer' } catch {}
-    
-    const timeout = setTimeout(() => {
-      console.warn('HTMLImage timeout', url)
-      resolve(false)
-    }, 10000) // 10 second timeout
-    
-    img.onload = () => {
-      clearTimeout(timeout)
-      try {
-        const scaleX = canvas.width / img.naturalWidth
-        const scaleY = canvas.height / img.naturalHeight
-        const uniform = Math.min(scaleX, scaleY)
-        const sw = img.naturalWidth * uniform
-        const sh = img.naturalHeight * uniform
-        const cx = (canvas.width - sw) / 2
-        const cy = (canvas.height - sh) / 2
-        const fImg = new fabric.Image(img, {
-          originX: 'left', originY: 'top', left: cx, top: cy,
-          scaleX: uniform, scaleY: uniform, name: 'BG_IMAGE', selectable: false, evented: false
-        })
-        canvas.backgroundImage = fImg
-        bringDesignObjectsToFront()
-        canvas.requestRenderAll()
-        resolve(true)
-      } catch (e) {
-        console.error('Error processing loaded image:', e, url)
-        resolve(false)
-      }
-    }
-    img.onerror = (e) => { 
-      clearTimeout(timeout)
-      console.warn('HTMLImage failed', e, url)
-      resolve(false) 
-    }
-    img.src = url
-  })
-}
-
-async function loadBackground(url) {
-  if (!url) return false
-  
-  // Try Netlify function proxy first (no CORS issues)
-  const proxied = `/.netlify/functions/img?src=${encodeURIComponent(url)}`
-  let ok = await loadViaHTMLImage(proxied)
-  console.debug("[BG-TRY] netlify function HTMLImage", proxied, ok)
-  if (ok) return true
-
-  ok = await loadBackgroundViaFabric(proxied, false)
-  console.debug("[BG-TRY] netlify function Fabric", proxied, ok)
-  if (ok) return true
-
-  // Then try direct paths
-  ok = await loadViaHTMLImage(url)
-  console.debug("[BG-TRY] direct HTMLImage", url, ok)
-  if (ok) return true
-
-  ok = await loadBackgroundViaFabric(url, true)
-  console.debug("[BG-TRY] fabric CORS", url, ok)
-  if (ok) return true
-
-  ok = await loadBackgroundViaBlob(url)
-  console.debug("[BG-TRY] blob", url, ok)
-  if (ok) return true
-
-  ok = await loadBackgroundViaFabric(url, false)
-  console.debug("[BG-TRY] fabric no-cors (tainted)", url, ok)
-  return ok
-}
+// Removed dynamic background helpers; static <img> is used instead
 async function updateProductAndBackground(id) {
   if (!id || !canvas) return
   try {
     const raw = await wooService.fetchProduct(String(id))
     selectedProduct.value = formatProduct(raw)
-    const bg = pickImage(selectedProduct.value)
-    console.debug('BG URL:', bg, selectedProduct.value)
-    // collect and set product images for view switching
-    const imgs = Array.isArray(raw?.images) ? raw.images.map((i) => i?.src).filter(Boolean) : (Array.isArray(selectedProduct.value?.gallery) ? selectedProduct.value.gallery : [])
-    if (Array.isArray(imgs) && imgs.length) {
-      productImages.value = imgs
-      currentViewIndex.value = 0
-    }
-    if (bg) {
-      const ok = await loadBackground(bg)
-      if (!ok) {
-        showWarning.value = true
-        warningMessage.value = 'Bild konnte nicht geladen werden. Prüfe CORS/Hotlink oder nutze die Proxy-Route.'
-      }
-      try { if (typeof window !== 'undefined') window.localStorage.setItem(`product:${id}:image`, bg) } catch {}
-    }
+    
+    // Always use the local bottle green image - no external image loading
+    console.debug('Using local bottle green image for product:', selectedProduct.value)
+    
+    // Clear product images array since we only use local image
+    productImages.value = []
+    currentViewIndex.value = 0
+    
+    // Always load the local bottle green background
+    await setShirtBackground()
   } catch {}
 }
 
 watch(() => props.productId, (id) => id && updateProductAndBackground(id), { immediate: true })
 
-watch(currentViewIndex, async (idx) => {
-  const url = productImages.value?.[idx]
-  if (url) { await loadBackground(url) }
-})
+// Removed product image view switching - always use local bottle green image
 
 const addShirtOutline = () => {
   if (!fabric) return
@@ -632,15 +494,16 @@ const addShirtOutline = () => {
   bringDesignObjectsToFront()
 }
 
-// Drag & Drop
+// Drag & Drop (bind to host div to avoid null refs)
 const setupDragAndDrop = () => {
-  const el = canvasRef.value
+  const el = canvasHost.value
+  if (!el) return
   el.addEventListener('dragover', (e) => { e.preventDefault(); el.style.borderColor = '#D8127D' })
   el.addEventListener('dragleave', (e) => { e.preventDefault(); el.style.borderColor = '#e5e7eb' })
   el.addEventListener('drop', async (e) => {
     e.preventDefault(); el.style.borderColor = '#e5e7eb'
     const files = e.dataTransfer.files
-    if (files.length > 0) await handleFile(files[0])
+    if (files && files.length > 0) await handleFile(files[0])
   })
 }
 
@@ -652,12 +515,12 @@ const handleFileUpload = async (event) => {
 }
 const handleFile = async (file) => {
   const fabricInstance = await ensureFabric()
-  const reader = new FileReader()
 
   if (file.type.startsWith('image/')) {
+    // For local files, use FileReader (no CORS issues)
+    const reader = new FileReader()
     reader.onload = (e) => {
       const img = new Image()
-      img.crossOrigin = 'anonymous'
       img.onload = () => {
         const fImg = new fabricInstance.Image(img, {
           left: canvas.width / 2,
@@ -671,6 +534,7 @@ const handleFile = async (file) => {
     }
     reader.readAsDataURL(file)
   } else if (file.name.endsWith('.svg')) {
+    const reader = new FileReader()
     reader.onload = (e) => {
       const svgText = e.target.result
       fabricInstance.loadSVGFromString(svgText, (objects, options) => {
@@ -681,6 +545,7 @@ const handleFile = async (file) => {
     reader.readAsText(file)
   }
 }
+
 
 const addObjectToDesignLayer = (obj) => {
   obj.set({ selectable: true, evented: true })
@@ -1281,8 +1146,8 @@ function updateObjectBorder(object) {
 
 // Canvas an Fenstergröße anpassen
 function handleResize() {
-  if (!canvas || !canvasRef.value) return
-  const w = canvasRef.value.offsetWidth
+  if (!canvas || !canvasHost.value) return
+  const w = canvasHost.value.offsetWidth
   const h = 600
   canvas.setWidth(w)
   canvas.setHeight(h)
