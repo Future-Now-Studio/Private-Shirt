@@ -79,8 +79,13 @@
             @navigate="handleNavigation"
           />
 
+          <!-- CREATOR PROGRAM PAGE -->
+          <Creator 
+            v-if="currentPage === 'Creator'"
+          />
+
           <!-- OTHER PAGES (Placeholders) -->
-          <div v-if="!['Home', 'ReadyToBuy', 'CustomizationCreator', 'ProductDetail', 'Grossbestellung', 'Checkout', 'OrderConfirmation'].includes(currentPage)">
+          <div v-if="!['Home', 'ReadyToBuy', 'CustomizationCreator', 'Creator', 'ProductDetail', 'Grossbestellung', 'Checkout', 'OrderConfirmation'].includes(currentPage)">
             <div class="container mx-auto px-6 py-24 text-center">
               <h1 class="text-4xl font-bold mb-4">{{ currentPage }}</h1>
               <p class="text-lg text-gray-600">Diese Seite befindet sich im Aufbau.</p>
@@ -149,6 +154,7 @@ import NotificationBar from '~/components/NotificationBar.vue'
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
 import Cart from '~/components/Cart.vue'
+import Creator from '~/components/Creator.vue'
 import HomePage from '~/pages/index.vue'
 import ReadyToBuyPage from '~/pages/ready-to-buy.vue'
 import CustomizationCreatorPage from '~/pages/customization-creator.vue'
