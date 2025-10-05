@@ -2,9 +2,9 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
-  // Configure for static generation with SPA fallback
+  // Configure for Netlify with functions
   nitro: {
-    preset: 'static'
+    preset: 'netlify'
   },
   
   // Enable SPA mode for client-side routing
