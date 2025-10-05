@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'netlify'
   },
+  
+  // Enable SSG for static generation but keep API routes
+  ssr: true,
 
   modules: [
     ['@nuxtjs/tailwindcss', {
