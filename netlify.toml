@@ -1,16 +1,10 @@
 [build]
   command = "npm run build"
-  publish = ".output/public"
+  publish = "dist"
   functions = ".netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
-
-# Don't redirect function requests
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
 
 # Handle SPA routing - redirect all other requests to index.html
 [[redirects]]
