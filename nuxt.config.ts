@@ -2,10 +2,13 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
-  // Configure for static generation
+  // Configure for static generation with SPA fallback
   nitro: {
     preset: 'static'
   },
+  
+  // Enable SPA mode for client-side routing
+  ssr: false,
 
   modules: [
     ['@nuxtjs/tailwindcss', {
