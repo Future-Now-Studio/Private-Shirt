@@ -446,11 +446,22 @@ const initCanvas = async () => {
 
 // Background (Mockup)
 async function loadBackgroundViaFabric(url, useCors) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (!fabric || !canvas || !url) { resolve(false); return }
     const options = useCors ? { crossOrigin: 'anonymous' } : undefined
+    
+    const timeout = setTimeout(() => {
+      console.warn('Fabric image timeout', url)
+      resolve(false)
+    }, 10000) // 10 second timeout
+    
     fabric.Image.fromURL(url, (img) => {
-      if (!img) { resolve(false); return }
+      clearTimeout(timeout)
+      if (!img) { 
+        console.warn('Fabric image failed to load', url)
+        resolve(false)
+        return 
+      }
       try {
         const scaleX = canvas.width / (img.width || 1)
         const scaleY = canvas.height / (img.height || 1)
@@ -464,7 +475,10 @@ async function loadBackgroundViaFabric(url, useCors) {
         bringDesignObjectsToFront()
         canvas.requestRenderAll()
         resolve(true)
-      } catch (e) { reject(e) }
+      } catch (e) { 
+        console.error('Error processing fabric image:', e, url)
+        resolve(false) 
+      }
     }, options)
   })
 }
@@ -513,24 +527,40 @@ async function loadViaHTMLImage(url) {
     const img = new Image()
     img.crossOrigin = 'anonymous'
     try { img.referrerPolicy = 'no-referrer' } catch {}
+    
+    const timeout = setTimeout(() => {
+      console.warn('HTMLImage timeout', url)
+      resolve(false)
+    }, 10000) // 10 second timeout
+    
     img.onload = () => {
-      const scaleX = canvas.width / img.naturalWidth
-      const scaleY = canvas.height / img.naturalHeight
-      const uniform = Math.min(scaleX, scaleY)
-      const sw = img.naturalWidth * uniform
-      const sh = img.naturalHeight * uniform
-      const cx = (canvas.width - sw) / 2
-      const cy = (canvas.height - sh) / 2
-      const fImg = new fabric.Image(img, {
-        originX: 'left', originY: 'top', left: cx, top: cy,
-        scaleX: uniform, scaleY: uniform, name: 'BG_IMAGE', selectable: false, evented: false
-      })
-      canvas.backgroundImage = fImg
-      bringDesignObjectsToFront()
-      canvas.requestRenderAll()
-      resolve(true)
+      clearTimeout(timeout)
+      try {
+        const scaleX = canvas.width / img.naturalWidth
+        const scaleY = canvas.height / img.naturalHeight
+        const uniform = Math.min(scaleX, scaleY)
+        const sw = img.naturalWidth * uniform
+        const sh = img.naturalHeight * uniform
+        const cx = (canvas.width - sw) / 2
+        const cy = (canvas.height - sh) / 2
+        const fImg = new fabric.Image(img, {
+          originX: 'left', originY: 'top', left: cx, top: cy,
+          scaleX: uniform, scaleY: uniform, name: 'BG_IMAGE', selectable: false, evented: false
+        })
+        canvas.backgroundImage = fImg
+        bringDesignObjectsToFront()
+        canvas.requestRenderAll()
+        resolve(true)
+      } catch (e) {
+        console.error('Error processing loaded image:', e, url)
+        resolve(false)
+      }
     }
-    img.onerror = (e) => { console.warn('HTMLImage failed', e, url); resolve(false) }
+    img.onerror = (e) => { 
+      clearTimeout(timeout)
+      console.warn('HTMLImage failed', e, url)
+      resolve(false) 
+    }
     img.src = url
   })
 }
