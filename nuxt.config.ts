@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   
   // Configure for Netlify with functions
   nitro: {
-    preset: 'netlify'
+    preset: 'netlify-legacy'
   },
   
   // Enable SPA mode for client-side routing
