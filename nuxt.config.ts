@@ -2,13 +2,18 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
-  // Configure for Netlify with functions
+  // Configure for Netlify static hosting
   nitro: {
-    preset: 'netlify-legacy'
+    preset: 'static'
   },
   
   // Enable SPA mode for client-side routing
   ssr: false,
+  
+  // Generate fallback for SPA routing
+  generate: {
+    fallback: true
+  },
 
   modules: [
     ['@nuxtjs/tailwindcss', {

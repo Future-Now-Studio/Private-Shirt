@@ -1,13 +1,12 @@
 [build]
-  command = "npm run build"
-  publish = "dist"
-  functions = "netlify/functions"
+  command = "npm run generate"
+  publish = ".output/public"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# Handle SPA routing - redirect all other requests to Nitro renderer
+# Handle SPA routing - redirect all other requests to index.html
 [[redirects]]
   from = "/*"
-  to = "/.netlify/functions/renderer"
+  to = "/index.html"
   status = 200
