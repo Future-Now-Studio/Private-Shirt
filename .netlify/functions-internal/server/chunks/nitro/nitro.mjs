@@ -84,8 +84,6 @@ function stringifyQuery(query) {
 const PROTOCOL_STRICT_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{1,2})/;
 const PROTOCOL_REGEX = /^[\s\w\0+.-]{2,}:([/\\]{2})?/;
 const PROTOCOL_RELATIVE_REGEX = /^([/\\]\s*){2,}[^/\\]/;
-const PROTOCOL_SCRIPT_RE = /^[\s\0]*(blob|data|javascript|vbscript):$/i;
-const TRAILING_SLASH_RE = /\/$|\/\?|\/#/;
 const JOIN_LEADING_SLASH_RE = /^\.?\//;
 function hasProtocol(inputString, opts = {}) {
   if (typeof opts === "boolean") {
@@ -96,52 +94,20 @@ function hasProtocol(inputString, opts = {}) {
   }
   return PROTOCOL_REGEX.test(inputString) || (opts.acceptRelative ? PROTOCOL_RELATIVE_REGEX.test(inputString) : false);
 }
-function isScriptProtocol(protocol) {
-  return !!protocol && PROTOCOL_SCRIPT_RE.test(protocol);
-}
 function hasTrailingSlash(input = "", respectQueryAndFragment) {
-  if (!respectQueryAndFragment) {
+  {
     return input.endsWith("/");
   }
-  return TRAILING_SLASH_RE.test(input);
 }
 function withoutTrailingSlash(input = "", respectQueryAndFragment) {
-  if (!respectQueryAndFragment) {
+  {
     return (hasTrailingSlash(input) ? input.slice(0, -1) : input) || "/";
   }
-  if (!hasTrailingSlash(input, true)) {
-    return input || "/";
-  }
-  let path = input;
-  let fragment = "";
-  const fragmentIndex = input.indexOf("#");
-  if (fragmentIndex !== -1) {
-    path = input.slice(0, fragmentIndex);
-    fragment = input.slice(fragmentIndex);
-  }
-  const [s0, ...s] = path.split("?");
-  const cleanPath = s0.endsWith("/") ? s0.slice(0, -1) : s0;
-  return (cleanPath || "/") + (s.length > 0 ? `?${s.join("?")}` : "") + fragment;
 }
 function withTrailingSlash(input = "", respectQueryAndFragment) {
-  if (!respectQueryAndFragment) {
+  {
     return input.endsWith("/") ? input : input + "/";
   }
-  if (hasTrailingSlash(input, true)) {
-    return input || "/";
-  }
-  let path = input;
-  let fragment = "";
-  const fragmentIndex = input.indexOf("#");
-  if (fragmentIndex !== -1) {
-    path = input.slice(0, fragmentIndex);
-    fragment = input.slice(fragmentIndex);
-    if (!path) {
-      return fragment;
-    }
-  }
-  const [s0, ...s] = path.split("?");
-  return s0 + "/" + (s.length > 0 ? `?${s.join("?")}` : "") + fragment;
 }
 function hasLeadingSlash(input = "") {
   return input.startsWith("/");
@@ -2543,8 +2509,7 @@ function createNodeFetch() {
 const fetch = globalThis.fetch ? (...args) => globalThis.fetch(...args) : createNodeFetch();
 const Headers$1 = globalThis.Headers || s$1;
 const AbortController = globalThis.AbortController || i;
-const ofetch = createFetch({ fetch, Headers: Headers$1, AbortController });
-const $fetch = ofetch;
+createFetch({ fetch, Headers: Headers$1, AbortController });
 
 function wrapToPromise(value) {
   if (!value || typeof value.then !== "function") {
@@ -4035,7 +4000,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "aede7bd4-692d-4602-891e-7941d03816b3",
+    "buildId": "1457a711-8b54-413c-8e0a-7c84255669c3",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4204,28 +4169,6 @@ const defaultNamespace = _globalThis[globalKey] || (_globalThis[globalKey] = cre
 const getContext = (key, opts = {}) => defaultNamespace.get(key, opts);
 const asyncHandlersKey = "__unctx_async_handlers__";
 const asyncHandlers = _globalThis[asyncHandlersKey] || (_globalThis[asyncHandlersKey] = /* @__PURE__ */ new Set());
-function executeAsync(function_) {
-  const restores = [];
-  for (const leaveHandler of asyncHandlers) {
-    const restore2 = leaveHandler();
-    if (restore2) {
-      restores.push(restore2);
-    }
-  }
-  const restore = () => {
-    for (const restore2 of restores) {
-      restore2();
-    }
-  };
-  let awaitable = function_();
-  if (awaitable && typeof awaitable === "object" && "catch" in awaitable) {
-    awaitable = awaitable.catch((error) => {
-      restore();
-      throw error;
-    });
-  }
-  return [awaitable, restore];
-}
 
 getContext("nitro-app", {
   asyncContext: false,
@@ -4476,7 +4419,7 @@ const _SxA8c9 = defineEventHandler(() => {});
 const _lazy_e_Lco7 = () => import('../routes/api/products/_id/placement-area.get.mjs');
 const _lazy_dH5LNB = () => import('../routes/api/products/_id/placement-area.put.mjs');
 const _lazy_BXFrdj = () => import('../routes/api/proxy.mjs');
-const _lazy_l74Tv5 = () => import('../routes/renderer.mjs').then(function (n) { return n.r; });
+const _lazy_l74Tv5 = () => import('../routes/renderer.mjs');
 
 const handlers = [
   { route: '/api/products/:id/placement-area', handler: _lazy_e_Lco7, lazy: true, middleware: false, method: "get" },
@@ -4764,5 +4707,5 @@ const handler = async function handler2(event, context) {
   return lambda(event, context);
 };
 
-export { $fetch as $, withTrailingSlash as A, withoutTrailingSlash as B, handler as C, getQuery as a, setHeader as b, createError$1 as c, defineEventHandler as d, getResponseStatusText as e, getResponseStatus as f, getRouterParam as g, defineRenderHandler as h, getRouteRules as i, joinRelativeURL as j, useNitroApp as k, hasProtocol as l, isScriptProtocol as m, joinURL as n, sanitizeStatusCode as o, getContext as p, createHooks as q, readBody as r, sendError as s, executeAsync as t, useRuntimeConfig as u, toRouteMatcher as v, withQuery as w, createRouter$1 as x, defu as y, parseQuery as z };
+export { getQuery as a, setHeader as b, createError$1 as c, defineEventHandler as d, getResponseStatusText as e, getResponseStatus as f, getRouterParam as g, defineRenderHandler as h, getRouteRules as i, joinRelativeURL as j, useNitroApp as k, handler as l, readBody as r, sendError as s, useRuntimeConfig as u };
 //# sourceMappingURL=nitro.mjs.map
