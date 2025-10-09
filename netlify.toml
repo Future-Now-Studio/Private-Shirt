@@ -6,8 +6,8 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Handle SPA routing - redirect all other requests to index.html
+# Handle SPA routing - redirect all other requests to Nitro renderer
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/.netlify/functions/renderer"
   status = 200
