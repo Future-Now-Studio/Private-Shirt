@@ -1,2 +1,2 @@
-# Netlify redirects for SPA routing via Nitro renderer
-/*    /.netlify/functions/renderer   200
+# Netlify redirects for SPA routing (static output)
+/*    /index.html   200
