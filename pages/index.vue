@@ -10,7 +10,7 @@
           </h1>
           <p class="text-sm sm:text-base md:text-lg lg:text-xl font-light mb-6 text-[#0a3a47]">gestalte ganz frei deinen look. t-shirts, sweatshirts, hoodies und vieles mehr. probier's einfach!</p>
           <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
-            <button class="btn bg-[#ffd44d] hover:bg-[#ffe28a] text-[#0a3a47] border-2 border-[#ffd44d] text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3">Jetzt gestalten</button>
+            <button @click="$emit('navigate', 'CustomizationCreator')" class="btn bg-[#ffd44d] hover:bg-[#ffe28a] text-[#0a3a47] border-2 border-[#ffd44d] text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3">Jetzt gestalten</button>
             <button @click="$emit('navigate', 'Grossbestellung')" class="btn border-2 border-[#D8127D] text-[#D8127D] hover:bg-[#D8127D] hover:text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3">Großbestellung anfragen</button>
           </div>
         </div>
