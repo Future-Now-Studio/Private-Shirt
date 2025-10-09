@@ -319,12 +319,16 @@ const hasDesign = ref(false)
 // Removed placement guide UI
 const showWarning = ref(false)
 const warningMessage = ref('')
-const hostBgStyle = computed(() => ({
-  backgroundImage: `url(${DEFAULT_BG_URL})`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'center',
-  backgroundSize: 'contain'
-}))
+const hostBgStyle = computed(() => {
+  // Use selected product image if available, otherwise fall back to default
+  const imageUrl = selectedProduct.value?.image || DEFAULT_BG_URL
+  return {
+    backgroundImage: `url(${imageUrl})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    backgroundSize: 'contain'
+  }
+})
 const availableSizes = computed(() => {
   const sizes = ['S','M','L','XL','XXL']
   if (Object.keys(sizeQuantities.value).length === 0) {
@@ -472,15 +476,13 @@ async function updateProductAndBackground(id) {
     const raw = await wooService.fetchProduct(String(id))
     selectedProduct.value = formatProduct(raw)
     
-    // Always use the local bottle green image - no external image loading
-    console.debug('Using local bottle green image for product:', selectedProduct.value)
+    console.debug('Product loaded:', selectedProduct.value)
     
-    // Clear product images array since we only use local image
+    // Clear product images array since we use the product's main image
     productImages.value = []
     currentViewIndex.value = 0
     
-    // Always load the local bottle green background
-    await setShirtBackground()
+    // Background image will be updated automatically via hostBgStyle computed property
   } catch {}
 }
 
