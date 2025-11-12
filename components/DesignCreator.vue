@@ -27,8 +27,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
               </button>
-            
-              <!-- Admin Controls simplified: single polygon button + save/clear -->
+
+              <!-- Admin Controls simplified -->
               <div class="relative group" v-if="isAdminMode">
                 <button @click="handlePolygonButton" class="btn-secondary" :class="{'bg-[#0a3a47] text-white': isDrawingPolygon || isEditingArea}" :title="polygonButtonTitle">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,17 +73,18 @@
               </div>
             </div>
           </div>
-          
-          <!-- Canvas Container (Fabric mounts inside; background via CSS) -->
+
+          <!-- Canvas Container -->
           <div class="relative rounded-lg overflow-hidden">
-            <div 
+            <div
               ref="canvasHost"
               class="relative w-full h-[600px] cursor-crosshair bg-white"
               :style="hostBgStyle"
               @keydown="onKeyDown"
               tabindex="0"
             ></div>
-            <!-- Warning Message - only for placement area validation -->
+
+            <!-- Warning Message -->
             <div v-if="showWarning" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-10">
               <div class="flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +95,7 @@
             </div>
           </div>
           <div class="mt-2 text-xs text-gray-500">Tipp: Objekte anklicken und mit der Maus ziehen, um sie zu bewegen.</div>
-      </div>
+        </div>
       </div>
 
       <!-- Sidebar -->
@@ -103,9 +104,7 @@
           <!-- Product Info -->
           <div>
             <h1 class="text-2xl font-bold mb-1">{{ productName }} <span class="text-xs text-gray-400">#{{ productId }}</span></h1>
-            <div class="text-sm text-[#D8127D] font-semibold mb-2 flex items-center gap-2">
-            
-            </div>
+            <div class="text-sm text-[#D8127D] font-semibold mb-2 flex items-center gap-2"></div>
           </div>
 
           <!-- Upload Section -->
@@ -113,7 +112,7 @@
             <div class="space-y-3">
               <button @click="openFileInput" class="btn w-full bg-[#D8127D] hover:bg-[#b0105f] text-white">
                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0-3l-3 3m3-3v12"/>
                 </svg>
                 Bild hochladen
               </button>
@@ -124,28 +123,103 @@
                 </svg>
                 Text hinzufügen
               </button>
-            
             </div>
           </div>
 
-          <!-- Product Views removed - always using local bottle green image -->
+          <!-- Admin Section -->
+          <div v-if="isAdminMode" class="border-t pt-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-gray-700">Admin Tools</span>
+                <button @click="toggleAdminMode" class="text-xs text-gray-500 hover:text-gray-700">Exit Admin</button>
+              </div>
+              
+              <button @click="togglePrintingAreaMode" 
+                      :class="['btn w-full text-sm', printingAreaMode ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-gray-600 hover:bg-gray-700 text-white']">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                {{ printingAreaMode ? 'Exit Printing Area Mode' : 'Set Printing Areas' }}
+              </button>
+              
+              <div v-if="printingAreaMode" class="text-xs text-gray-600 bg-yellow-50 p-2 rounded">
+                <p><strong>Instructions:</strong></p>
+                <p>• Click and drag on empty canvas to create printing area rectangles</p>
+                <p>• Click on existing rectangles to select and move/resize them</p>
+                <p>• Press Delete key to remove selected printing area</p>
+                <p>• Click "Save Printing Areas" when done</p>
+              </div>
+              
+              <button v-if="printingAreaMode && printingAreas.length > 0" 
+                      @click="savePrintingAreas" 
+                      class="btn w-full bg-green-600 hover:bg-green-700 text-white text-sm">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                </svg>
+                Save Printing Areas ({{ printingAreas.length }})
+              </button>
+              
+              <!-- Printing Area Dimensions -->
+              <div v-if="printingAreas.length > 0" class="text-xs text-gray-600 bg-blue-50 p-2 rounded">
+                <p class="font-semibold mb-1">Druckbereich Dimensionen:</p>
+                <div v-for="(area, index) in printingAreas" :key="index" class="mb-1">
+                  <span class="font-medium">Bereich {{ index + 1 }}:</span>
+                  {{ Math.round(area.width * 0.264583) }} × {{ Math.round(area.height * 0.264583) }} mm
+                  <span class="text-gray-500">({{ Math.round(area.width) }} × {{ Math.round(area.height) }} px)</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          <!-- Admin Toggle Button (Hidden by default) -->
+          <div v-if="!isAdminMode" class="border-t pt-4">
+            <button @click="toggleAdminMode" class="text-xs text-gray-400 hover:text-gray-600 w-full text-left">
+              Admin Tools
+            </button>
+          </div>
 
+          <!-- Product Variations -->
+          <div v-if="productVariations.length > 0">
+            <div class="font-semibold mb-2 text-[#0a3a47]">Produkt Farben</div>
+            <div class="grid grid-cols-4 gap-2 mb-2">
+              <button
+                v-for="variation in productVariations"
+                :key="variation.id"
+                :title="variation.colorCode || variation.name"
+                @click="selectVariation(variation)"
+                :class="['w-12 h-12 rounded-lg border-2 flex items-center justify-center text-xs font-semibold group relative overflow-hidden',
+                         selectedVariation?.id === variation.id ? 'border-[#D8127D] ring-2 ring-[#ffd44d]' : 'border-gray-200']"
+                :style="{ backgroundColor: variation._hex || getColorFromCode(variation.colorCode) || '#ccc' }"
+              >
+                <!-- Color code only visible on hover -->
+                <span class="text-white drop-shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {{ variation.colorCode || 'N/A' }}
+                </span>
+              </button>
+            </div>
+            <div class="text-xs text-gray-500">
+              Gewählte Farbe: <span class="font-semibold text-[#0a3a47]">{{ selectedVariation?.colorCode || 'Standard' }}</span>
+            </div>
+          </div>
 
-          
-
-          <!-- Color Swatches -->
-          <div>
+          <!-- Fallback Color Swatches (if no variations) -->
+          <div v-else>
             <div class="font-semibold mb-2 text-[#0a3a47]">Shirt Farbe</div>
             <div class="grid grid-cols-8 gap-2 mb-2">
-              <button 
-                v-for="(color, i) in colors" 
-                :key="color.name" 
-                :title="color.name" 
-                @click="changeShirtColor(i)" 
-                :class="['w-7 h-7 rounded-full border-2', selectedColor === i ? 'border-[#D8127D] ring-2 ring-[#ffd44d]' : 'border-gray-200']" 
+              <button
+                v-for="(color, i) in colors"
+                :key="color.name"
+                :title="color.name"
+                @click="changeShirtColor(i)"
+                :class="['w-7 h-7 rounded-full border-2 group relative flex items-center justify-center text-xs font-semibold',
+                         selectedColor === i ? 'border-[#D8127D] ring-2 ring-[#ffd44d]' : 'border-gray-200']"
                 :style="{backgroundColor: color.hex}"
-              ></button>
+              >
+                <!-- Color name only visible on hover -->
+                <span class="text-white drop-shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {{ color.name.charAt(0) }}
+                </span>
+              </button>
             </div>
             <div class="text-xs text-gray-500">Gewählte Farbe: <span class="font-semibold text-[#0a3a47]">{{ colors[selectedColor].name }}</span></div>
           </div>
@@ -182,8 +256,8 @@
                 <div>
                   <label class="block text-xs font-medium text-gray-700 mb-1">Farbe</label>
                   <div class="grid grid-cols-6 gap-1">
-                    <button 
-                      v-for="color in textColors" 
+                    <button
+                      v-for="color in textColors"
                       :key="color.name"
                       @click="changeTextColor(color.hex)"
                       :class="['w-6 h-6 rounded border', selectedObject.fill === color.hex ? 'border-[#D8127D] ring-2' : 'border-gray-200']"
@@ -227,15 +301,20 @@
           <div class="bg-gray-50 rounded-lg p-4 flex flex-col gap-2">
             <div class="flex justify-between items-center">
               <span class="font-semibold text-[#0a3a47]">Gesamtsumme</span>
-              <span class="text-lg font-bold text-[#D8127D]">11,90 €</span>
+              <span class="text-lg font-bold text-[#D8127D]">{{ productPrice }} €</span>
             </div>
             <div class="text-xs text-gray-500">inkl. MwSt. EU / inkl. Druckkosten / zzgl. <a href="#" class="underline text-[#D8127D]">Versand</a></div>
             <div class="text-sm text-[#0a3a47] font-semibold mt-2">Lieferung in der Regel innerhalb von 4 Werktagen</div>
           </div>
 
-          <button @click="openSizeModal" class="btn w-full bg-[#ff7a00] hover:bg-[#ffa940] text-white text-lg font-bold py-3 rounded-lg mt-2">
-            Größe und Menge wählen
-          </button>
+          <div class="flex gap-2 mt-2">
+            <button @click="openEmailModal" class="btn flex-1 bg-[#D8127D] hover:bg-[#b0105f] text-white text-sm font-bold py-3 rounded-lg">
+              Per E-Mail senden
+            </button>
+            <button @click="openSizeModal" class="btn flex-1 bg-[#ff7a00] hover:bg-[#ffa940] text-white text-sm font-bold py-3 rounded-lg">
+              Größe und Menge wählen
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -256,6 +335,46 @@
       <div class="flex justify-end gap-2 mt-6">
         <button @click="showSizeModal = false" class="btn btn-secondary">Abbrechen</button>
         <button @click="confirmSizesAndGoToCheckout" class="btn bg-[#ff7a00] hover:bg-[#ffa940] text-white">Weiter zur Kasse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/40" @click="showEmailModal = false"></div>
+    <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6">
+      <h3 class="text-lg font-semibold text-[#0a3a47] mb-4">Design per E-Mail senden</h3>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">E-Mail Adresse</label>
+          <input 
+            type="email" 
+            v-model="emailAddress" 
+            placeholder="deine@email.de"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#D8127D] focus:border-transparent"
+            :class="{ 'border-red-500': emailError }"
+          />
+          <p v-if="emailError" class="text-red-500 text-xs mt-1">{{ emailError }}</p>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <p class="text-sm text-gray-600">
+            <strong>Was wird gesendet:</strong><br>
+            • Dein komplettes Design als Bild<br>
+            • Alle Design-Elemente einzeln<br>
+            • Produktinformationen<br>
+            • Link zum Bestellen
+          </p>
+        </div>
+      </div>
+      
+      <div class="flex justify-end gap-2 mt-6">
+        <button @click="showEmailModal = false" class="btn btn-secondary">Abbrechen</button>
+        <button @click="sendDesignByEmail" :disabled="isSendingEmail" class="btn bg-[#D8127D] hover:bg-[#b0105f] text-white disabled:opacity-50">
+          <span v-if="isSendingEmail">Wird gesendet...</span>
+          <span v-else>E-Mail senden</span>
+        </button>
       </div>
     </div>
   </div>
@@ -288,7 +407,11 @@ const { addToCart } = useCart()
 const showSizeModal = ref(false)
 const sizeQuantities = ref({})
 
-
+// Email functionality
+const showEmailModal = ref(false)
+const emailAddress = ref('')
+const emailError = ref('')
+const isSendingEmail = ref(false)
 
 // Admin/Polygon
 const isAdminMode = ref(false)
@@ -300,28 +423,35 @@ let polylineOverlay = null
 const pointMarkers = []
 let polygonControlPoints = []
 
+// Printing Area Management
+const printingAreaMode = ref(false)
+const printingAreas = ref([]) // Array of printing area rectangles
+const isDrawingPrintingArea = ref(false)
+const currentPrintingArea = ref(null)
+let printingAreaStartPoint = null
+
 // Shirt Colors
 const selectedColor = ref(2)
 const colors = [
-  { name: 'Weiß', hex: '#f5f5f5' },
-  { name: 'Schwarz', hex: '#222' },
-  { name: 'Atoll', hex: '#1cc6ea' },
-  { name: 'Gelb', hex: '#ffe600' },
-  { name: 'Pink', hex: '#D8127D' },
-  { name: 'Grün', hex: '#6bbf59' },
-  { name: 'Rot', hex: '#e53935' },
-  { name: 'Blau', hex: '#1976d2' },
+  { name: 'Weiß', hex: '#FFFFFF' },
+  { name: 'Schwarz', hex: '#000000' },
+  { name: 'Atoll', hex: '#00BFFF' },
+  { name: 'Gelb', hex: '#FFFF00' },
+  { name: 'Pink', hex: '#FF1493' },
+  { name: 'Grün', hex: '#00FF00' },
+  { name: 'Rot', hex: '#FF0000' },
+  { name: 'Blau', hex: '#0000FF' },
 ]
 
 // UI
 const selectedObject = ref(null)
 const hasDesign = ref(false)
-// Removed placement guide UI
 const showWarning = ref(false)
 const warningMessage = ref('')
+
+// The background is rendered via CSS on the host div
 const hostBgStyle = computed(() => {
-  // Use selected product image if available, otherwise fall back to default
-  const imageUrl = selectedProduct.value?.image || DEFAULT_BG_URL
+  const imageUrl = selectedVariation.value?.image || selectedProduct.value?.image || DEFAULT_BG_URL
   return {
     backgroundImage: `url(${imageUrl})`,
     backgroundRepeat: 'no-repeat',
@@ -329,36 +459,494 @@ const hostBgStyle = computed(() => {
     backgroundSize: 'contain'
   }
 })
+
 const availableSizes = computed(() => {
-  const sizes = ['S','M','L','XL','XXL']
-  if (Object.keys(sizeQuantities.value).length === 0) {
-    sizes.forEach(s => { sizeQuantities.value[s] = 0 })
-  }
+  // Prefer WooCommerce Size attribute values; fallback to standard sizes
+  const sizes = (selectedProduct.value?.sizes && selectedProduct.value.sizes.length > 0)
+    ? selectedProduct.value.sizes
+    : ['S','M','L','XL','XXL']
+  // Initialize quantities for any missing keys
+  sizes.forEach(s => {
+    if (typeof sizeQuantities.value[s] !== 'number') sizeQuantities.value[s] = 0
+  })
   return sizes
 })
 function openSizeModal() {
   if (!selectedProduct.value) return
-  // ensure all common sizes are initialized
-  ;['S','M','L','XL','XXL'].forEach(s => {
+  // Ensure quantities are initialized for current available sizes
+  availableSizes.value.forEach(s => {
     if (typeof sizeQuantities.value[s] !== 'number') sizeQuantities.value[s] = 0
   })
   showSizeModal.value = true
 }
 function confirmSizesAndGoToCheckout() {
+  // Check if any design objects are outside printing areas
+  if (printingAreas.value.length > 0 && !validateDesignInPrintingAreas()) {
+    alert('Bitte verschieben Sie alle Design-Elemente in die definierten Druckbereiche, bevor Sie fortfahren.')
+    return
+  }
+  
   const entries = Object.entries(sizeQuantities.value).filter(([, q]) => Number(q) > 0)
   if (!entries.length) { showSizeModal.value = false; return }
   entries.forEach(([size, qty]) => {
     addToCart({
       id: selectedProduct.value?.id || props.productId,
       name: selectedProduct.value?.name || 'Custom Produkt',
-      price: selectedProduct.value?.price || '0',
+      price: selectedVariation.value?.price || selectedProduct.value?.price || '0',
       quantity: Number(qty),
       selectedSize: size,
-      image: selectedProduct.value?.image
+      selectedColor: selectedVariation.value?.colorCode || null,
+      image: selectedVariation.value?.image || selectedProduct.value?.image
     })
   })
   showSizeModal.value = false
   router.push('/checkout')
+}
+
+// Email functionality
+function openEmailModal() {
+  emailAddress.value = ''
+  emailError.value = ''
+  showEmailModal.value = true
+}
+
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+async function sendDesignByEmail() {
+  // Validate email
+  if (!emailAddress.value.trim()) {
+    emailError.value = 'Bitte gib eine E-Mail Adresse ein.'
+    return
+  }
+  
+  if (!validateEmail(emailAddress.value)) {
+    emailError.value = 'Bitte gib eine gültige E-Mail Adresse ein.'
+    return
+  }
+  
+  isSendingEmail.value = true
+  emailError.value = ''
+  
+  try {
+    // Generate composite image (full design)
+    const compositeImage = await generateCompositeImage()
+    
+    // Generate individual design element images
+    const individualImages = await generateIndividualImages()
+    
+    // Create email content
+    const emailContent = createEmailContent(compositeImage, individualImages)
+    
+    // Send email (this would typically call a backend API)
+    await sendEmail(emailAddress.value, emailContent)
+    
+    // Success
+    showEmailModal.value = false
+    alert('Dein Design wurde erfolgreich per E-Mail gesendet!')
+    
+  } catch (error) {
+    console.error('Error sending email:', error)
+    emailError.value = 'Fehler beim Senden der E-Mail. Bitte versuche es erneut.'
+  } finally {
+    isSendingEmail.value = false
+  }
+}
+
+async function generateCompositeImage() {
+  if (!canvas) throw new Error('Canvas not initialized')
+  
+  // Create a temporary canvas for the composite image
+  const tempCanvas = document.createElement('canvas')
+  const tempCtx = tempCanvas.getContext('2d')
+  
+  // Set canvas size to match the design
+  tempCanvas.width = 800
+  tempCanvas.height = 600
+  
+  // Fill with white background
+  tempCtx.fillStyle = 'white'
+  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
+  
+  // Draw background image if available
+  if (bgImageObj && bgImageObj._originalElement) {
+    const img = bgImageObj._originalElement
+    const scale = Math.min(tempCanvas.width / img.width, tempCanvas.height / img.height)
+    const scaledWidth = img.width * scale
+    const scaledHeight = img.height * scale
+    const x = (tempCanvas.width - scaledWidth) / 2
+    const y = (tempCanvas.height - scaledHeight) / 2
+    
+    tempCtx.drawImage(img, x, y, scaledWidth, scaledHeight)
+  }
+  
+  // Draw all design objects
+  const designObjects = canvas.getObjects().filter(obj => obj.name === 'DESIGN_OBJECT')
+  designObjects.forEach(obj => {
+    if (obj.type === 'textbox' || obj.type === 'text') {
+      // Draw text
+      tempCtx.font = `${obj.fontSize}px ${obj.fontFamily}`
+      tempCtx.fillStyle = obj.fill
+      tempCtx.textAlign = 'left'
+      tempCtx.textBaseline = 'top'
+      tempCtx.fillText(obj.text, obj.left, obj.top)
+    } else if (obj.type === 'image') {
+      // Draw image
+      const img = obj._originalElement
+      if (img) {
+        tempCtx.drawImage(img, obj.left, obj.top, obj.width * obj.scaleX, obj.height * obj.scaleY)
+      }
+    }
+  })
+  
+  return tempCanvas.toDataURL('image/png')
+}
+
+async function generateIndividualImages() {
+  if (!canvas) throw new Error('Canvas not initialized')
+  
+  const individualImages = []
+  const designObjects = canvas.getObjects().filter(obj => obj.name === 'DESIGN_OBJECT')
+  
+  for (const obj of designObjects) {
+    const tempCanvas = document.createElement('canvas')
+    const tempCtx = tempCanvas.getContext('2d')
+    
+    // Set canvas size based on object
+    tempCanvas.width = obj.width * obj.scaleX + 20 // Add padding
+    tempCanvas.height = obj.height * obj.scaleY + 20
+    
+    // Fill with transparent background
+    tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height)
+    
+    if (obj.type === 'textbox' || obj.type === 'text') {
+      // Draw text
+      tempCtx.font = `${obj.fontSize}px ${obj.fontFamily}`
+      tempCtx.fillStyle = obj.fill
+      tempCtx.textAlign = 'left'
+      tempCtx.textBaseline = 'top'
+      tempCtx.fillText(obj.text, 10, 10) // Add padding
+    } else if (obj.type === 'image') {
+      // Draw image
+      const img = obj._originalElement
+      if (img) {
+        tempCtx.drawImage(img, 10, 10, obj.width * obj.scaleX, obj.height * obj.scaleY)
+      }
+    }
+    
+    individualImages.push({
+      type: obj.type,
+      content: tempCanvas.toDataURL('image/png'),
+      name: obj.type === 'textbox' || obj.type === 'text' ? `Text: ${obj.text.substring(0, 20)}...` : 'Bild'
+    })
+  }
+  
+  return individualImages
+}
+
+function createEmailContent(compositeImage, individualImages) {
+  const productName = selectedProduct.value?.name || 'Custom Produkt'
+  const productPrice = productPrice.value
+  
+  return {
+    subject: `Dein Design für ${productName} - Private Shirt`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #D8127D;">Hallo!</h2>
+        <p>Hier ist dein gestaltetes Design für <strong>${productName}</strong>:</p>
+        
+        <div style="text-align: center; margin: 20px 0;">
+          <h3>Dein komplettes Design:</h3>
+          <img src="${compositeImage}" alt="Komplettes Design" style="max-width: 100%; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+        
+        ${individualImages.length > 0 ? `
+        <div style="margin: 20px 0;">
+          <h3>Deine Design-Elemente einzeln:</h3>
+          ${individualImages.map(img => `
+            <div style="margin: 10px 0; padding: 10px; border: 1px solid #eee; border-radius: 4px;">
+              <h4 style="margin: 0 0 10px 0; color: #0a3a47;">${img.name}</h4>
+              <img src="${img.content}" alt="${img.name}" style="max-width: 200px; border: 1px solid #ddd;">
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #0a3a47; margin-top: 0;">Produktinformationen:</h3>
+          <p><strong>Produkt:</strong> ${productName}</p>
+          <p><strong>Preis:</strong> ${productPrice} €</p>
+          <p><strong>Farbe:</strong> ${selectedVariation.value?.colorCode || 'Standard'}</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${window.location.origin}/customization-creator?product=${props.productId}" 
+             style="background: #D8127D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Jetzt bestellen
+          </a>
+        </div>
+        
+        <p style="color: #666; font-size: 14px;">
+          Mit freundlichen Grüßen<br>
+          Dein Private Shirt Team
+        </p>
+      </div>
+    `
+  }
+}
+
+async function sendEmail(email, content) {
+  // This would typically call a backend API to send the email
+  // For now, we'll simulate the email sending
+  console.log('Sending email to:', email)
+  console.log('Email content:', content)
+  
+  // Simulate API call
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  
+  // In a real implementation, you would call your backend API here:
+  // const response = await fetch('/api/send-email', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ email, content })
+  // })
+  // if (!response.ok) throw new Error('Failed to send email')
+}
+
+// Admin and Printing Area Methods
+function toggleAdminMode() {
+  isAdminMode.value = !isAdminMode.value
+  if (!isAdminMode.value) {
+    printingAreaMode.value = false
+    isDrawingPrintingArea.value = false
+  }
+}
+
+function togglePrintingAreaMode() {
+  printingAreaMode.value = !printingAreaMode.value
+  isDrawingPrintingArea.value = false
+  if (printingAreaMode.value) {
+    loadPrintingAreas()
+  }
+}
+
+async function loadPrintingAreas() {
+  try {
+    const response = await fetch(`/api/products/${props.productId}/placement-area`)
+    if (response.ok) {
+      const data = await response.json()
+      printingAreas.value = data.printingAreas || []
+      renderPrintingAreas()
+    }
+  } catch (error) {
+    console.error('Error loading printing areas:', error)
+  }
+}
+
+async function savePrintingAreas() {
+  try {
+    const response = await fetch(`/api/products/${props.productId}/placement-area`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        printingAreas: printingAreas.value
+      })
+    })
+    
+    if (response.ok) {
+      alert('Druckbereiche erfolgreich gespeichert!')
+      printingAreaMode.value = false
+    } else {
+      alert('Fehler beim Speichern der Druckbereiche.')
+    }
+  } catch (error) {
+    console.error('Error saving printing areas:', error)
+    alert('Fehler beim Speichern der Druckbereiche.')
+  }
+}
+
+function renderPrintingAreas() {
+  if (!canvas || !printingAreas.value.length) return
+  
+  // Clear existing printing area objects
+  const existingAreas = canvas.getObjects().filter(obj => obj.name === 'PRINTING_AREA')
+  existingAreas.forEach(obj => canvas.remove(obj))
+  
+  // Add printing area rectangles
+  printingAreas.value.forEach((area, index) => {
+    const rect = new fabric.Rect({
+      left: area.x,
+      top: area.y,
+      width: area.width,
+      height: area.height,
+      fill: 'rgba(255, 0, 0, 0.1)',
+      stroke: '#ff0000',
+      strokeWidth: 2,
+      strokeDashArray: [5, 5],
+      selectable: true,
+      evented: true,
+      name: 'PRINTING_AREA',
+      data: { index },
+      cornerColor: '#ff0000',
+      cornerSize: 8,
+      transparentCorners: false,
+      borderColor: '#ff0000',
+      borderScaleFactor: 2
+    })
+    
+    // Add event listeners for moving and resizing
+    rect.on('modified', () => {
+      updatePrintingAreaFromObject(rect)
+    })
+    
+    rect.on('moving', () => {
+      updatePrintingAreaFromObject(rect)
+    })
+    
+    rect.on('scaling', () => {
+      updatePrintingAreaFromObject(rect)
+    })
+    
+    canvas.add(rect)
+  })
+  
+  canvas.requestRenderAll()
+}
+
+function updatePrintingAreaFromObject(rect) {
+  const index = rect.data.index
+  if (index !== undefined && printingAreas.value[index]) {
+    printingAreas.value[index] = {
+      x: rect.left,
+      y: rect.top,
+      width: rect.width * rect.scaleX,
+      height: rect.height * rect.scaleY
+    }
+  }
+}
+
+function validateDesignInPrintingAreas() {
+  if (!canvas || printingAreas.value.length === 0) return true
+  
+  const designObjects = canvas.getObjects().filter(obj => obj.name === 'DESIGN_OBJECT')
+  
+  for (const obj of designObjects) {
+    const objBounds = obj.getBoundingRect()
+    let isInPrintingArea = false
+    
+    for (const area of printingAreas.value) {
+      if (isObjectInArea(objBounds, area)) {
+        isInPrintingArea = true
+        break
+      }
+    }
+    
+    if (!isInPrintingArea) {
+      return false
+    }
+  }
+  
+  return true
+}
+
+function isObjectInArea(objBounds, area) {
+  return objBounds.left >= area.x &&
+         objBounds.top >= area.y &&
+         objBounds.left + objBounds.width <= area.x + area.width &&
+         objBounds.top + objBounds.height <= area.y + area.height
+}
+
+function updatePrintingAreaPreview() {
+  if (!canvas || !currentPrintingArea.value) return
+  
+  // Remove existing preview
+  const existingPreview = canvas.getObjects().filter(obj => obj.name === 'PRINTING_AREA_PREVIEW')
+  existingPreview.forEach(obj => canvas.remove(obj))
+  
+  // Add preview rectangle
+  const preview = new fabric.Rect({
+    left: currentPrintingArea.value.x,
+    top: currentPrintingArea.value.y,
+    width: currentPrintingArea.value.width,
+    height: currentPrintingArea.value.height,
+    fill: 'rgba(0, 255, 0, 0.2)',
+    stroke: '#00ff00',
+    strokeWidth: 2,
+    strokeDashArray: [3, 3],
+    selectable: false,
+    evented: false,
+    name: 'PRINTING_AREA_PREVIEW'
+  })
+  canvas.add(preview)
+  canvas.requestRenderAll()
+}
+
+function validateAndMaybeRevert(obj) {
+  if (!obj || obj.name !== 'DESIGN_OBJECT') return
+  
+  // Check printing area validation first (if printing areas are defined)
+  if (printingAreas.value.length > 0) {
+    const objBounds = obj.getBoundingRect()
+    let isInPrintingArea = false
+    
+    for (const area of printingAreas.value) {
+      if (isObjectInArea(objBounds, area)) {
+        isInPrintingArea = true
+        break
+      }
+    }
+    
+    if (!isInPrintingArea) {
+      // Show warning but allow movement
+      showWarning.value = true
+      warningMessage.value = 'Design-Elemente müssen innerhalb der definierten Druckbereiche platziert werden.'
+      setTimeout(() => {
+        showWarning.value = false
+      }, 3000)
+      
+      // Add red border to indicate object is outside printing area
+      obj.set({ stroke: '#e53e3e', strokeWidth: 2 })
+      canvas.requestRenderAll()
+      
+      // Store current position as potentially invalid
+      // Don't revert, just mark as outside printing area
+      return
+    } else {
+      // Object is in printing area, remove warning border and store as valid position
+      obj.set({ stroke: null, strokeWidth: 0 })
+      lastValidTransform.set(obj, {
+        left: obj.left,
+        top: obj.top,
+        scaleX: obj.scaleX,
+        scaleY: obj.scaleY,
+        angle: obj.angle
+      })
+      canvas.requestRenderAll()
+    }
+  }
+  
+  // Check polygon validation (if polygon is defined)
+  const hasPoly = customPolygon.value.length >= 3
+  if (!hasPoly) {
+    updateObjectBorder(obj)
+    rememberTransform(obj)
+    return
+  }
+
+  const inside = objectFullyInsidePolygon(obj, customPolygon.value)
+  if (inside) {
+    updateObjectBorder(obj)
+    rememberTransform(obj)
+  } else {
+    obj.set({ stroke: '#e53e3e', strokeWidth: 3 })
+    showWarning.value = true
+    warningMessage.value = 'Bitte innerhalb der Fläche platzieren.'
+    canvas.requestRenderAll()
+  }
 }
 
 // Helpers
@@ -375,7 +963,7 @@ const initCanvas = async () => {
   if (!canvasHost.value) return
   await ensureFabric()
 
-  // Mount Fabric Canvas inside the host div to avoid DOM insertBefore issues
+  // Mount Fabric Canvas inside the host div
   const el = document.createElement('canvas')
   el.setAttribute('role', 'img')
   el.setAttribute('aria-label', 'Gestaltungsfläche')
@@ -393,16 +981,33 @@ const initCanvas = async () => {
   canvas.perPixelTargetFind = false
   canvas.targetFindTolerance = 10
 
-  // We now use a static <img> element underneath as the background.
-
-  // Hinweis: Wir fügen Design-Objekte direkt zum Canvas hinzu
-  designLayer = null
-
   addShirtOutline()
 
-  // Mouse handlers: polygon point placement or panning (Alt)
+  // Mouse handlers
   canvas.on('mouse:down', (opt) => {
     const e = opt.e
+    if (printingAreaMode.value) {
+      const pointer = canvas.getPointer(e)
+      const target = canvas.findTarget(e)
+      
+      // If clicking on an existing printing area, don't start drawing
+      if (target && target.name === 'PRINTING_AREA') {
+        // Allow normal selection/movement of printing areas
+        return
+      }
+      
+      // Start drawing new printing area only if not clicking on existing area
+      isDrawingPrintingArea.value = true
+      printingAreaStartPoint = pointer
+      currentPrintingArea.value = {
+        x: pointer.x,
+        y: pointer.y,
+        width: 0,
+        height: 0
+      }
+      return
+    }
+    
     if (isDrawingPolygon.value) {
       const pointer = canvas.getPointer(e)
       customPolygon.value.push({ x: pointer.x, y: pointer.y })
@@ -419,8 +1024,27 @@ const initCanvas = async () => {
     }
   })
   canvas.on('mouse:move', (opt) => {
-    if (!isDragging) return
     const e = opt.e
+    
+    // Handle printing area drawing
+    if (isDrawingPrintingArea.value && printingAreaStartPoint) {
+      const pointer = canvas.getPointer(e)
+      const width = pointer.x - printingAreaStartPoint.x
+      const height = pointer.y - printingAreaStartPoint.y
+      
+      currentPrintingArea.value = {
+        x: Math.min(printingAreaStartPoint.x, pointer.x),
+        y: Math.min(printingAreaStartPoint.y, pointer.y),
+        width: Math.abs(width),
+        height: Math.abs(height)
+      }
+      
+      // Update the preview rectangle
+      updatePrintingAreaPreview()
+      return
+    }
+    
+    if (!isDragging) return
     const dx = e.clientX - lastPosX
     const dy = e.clientY - lastPosY
     const vpt = canvas.viewportTransform
@@ -428,7 +1052,21 @@ const initCanvas = async () => {
     canvas.setViewportTransform(vpt)
     lastPosX = e.clientX; lastPosY = e.clientY
   })
-  canvas.on('mouse:up', () => { isDragging = false; canvas.defaultCursor = 'default' })
+  canvas.on('mouse:up', () => { 
+    isDragging = false
+    canvas.defaultCursor = 'default'
+    
+    // Complete printing area drawing
+    if (isDrawingPrintingArea.value && currentPrintingArea.value && 
+        currentPrintingArea.value.width > 10 && currentPrintingArea.value.height > 10) {
+      printingAreas.value.push({ ...currentPrintingArea.value })
+      renderPrintingAreas()
+    }
+    
+    isDrawingPrintingArea.value = false
+    currentPrintingArea.value = null
+    printingAreaStartPoint = null
+  })
   canvas.on('mouse:wheel', (opt) => {
     const e = opt.e
     if (!e.ctrlKey) return
@@ -448,55 +1086,71 @@ const initCanvas = async () => {
   canvas.on('object:rotating', (e) => validateAndMaybeRevert(e.target))
 
   setupDragAndDrop()
-  // Load product data (background handled by static <img>)
   await updateProductAndBackground(props.productId)
 }
 
-// Background handled by static <img> in template for simplicity
-
-// Product info
 const selectedProduct = ref(null)
 const productImages = ref([])
 const currentViewIndex = ref(0)
+const productVariations = ref([])
+const selectedVariation = ref(null)
 const productName = computed(() => selectedProduct.value?.name || 'Unisex Basic T-Shirt')
 const productDescription = computed(() => {
   const raw = selectedProduct.value?.description || ''
   try { return raw.replace(/<[^>]*>/g, '').trim() } catch { return raw }
 })
 
-// pickImage function removed - always using local bottle green image
+const productPrice = computed(() => {
+  // Use variation price if available, otherwise use product price
+  const price = selectedVariation.value?.price || selectedProduct.value?.price || '0'
+  // Format price with 2 decimal places
+  const numericPrice = parseFloat(price) || 0
+  return numericPrice.toFixed(2)
+})
 
-const { wooService, formatProduct } = useWooCommerce()
+const { wooService, formatProduct, formatVariation } = useWooCommerce()
 
-
-// Removed dynamic background helpers; static <img> is used instead
 async function updateProductAndBackground(id) {
   if (!id || !canvas) return
   try {
     const raw = await wooService.fetchProduct(String(id))
     selectedProduct.value = formatProduct(raw)
-    
-    console.debug('Product loaded:', selectedProduct.value)
-    
-    // Clear product images array since we use the product's main image
+
+    // Fetch product variations
+    try {
+      const variationsRaw = await wooService.fetchProductVariations(String(id))
+      const vs = variationsRaw.map(formatVariation)
+
+      // compute an average color from image for each variation
+      await Promise.all(vs.map(async v => {
+        const img = v.image || selectedProduct.value?.image
+        v._hex = await getDominantHex(img) // <- accurate swatch
+      }))
+
+      productVariations.value = vs
+      if (productVariations.value.length > 0) {
+        selectedVariation.value = productVariations.value[0]
+      }
+    } catch (variationError) {
+      console.warn('Could not load product variations:', variationError)
+      productVariations.value = []
+    }
+
     productImages.value = []
     currentViewIndex.value = 0
-    
-    // Background image will be updated automatically via hostBgStyle computed property
-  } catch {}
+  } catch (e) {
+    console.warn('Product load failed', e)
+  }
 }
 
 watch(() => props.productId, (id) => id && updateProductAndBackground(id), { immediate: true })
 
-// Removed product image view switching - always use local bottle green image
-
 const addShirtOutline = () => {
   if (!fabric) return
-  // Outlines removed per request; keep only design objects and background
   bringDesignObjectsToFront()
 }
 
-// Drag & Drop (bind to host div to avoid null refs)
+// Drag & Drop
 const setupDragAndDrop = () => {
   const el = canvasHost.value
   if (!el) return
@@ -519,7 +1173,6 @@ const handleFile = async (file) => {
   const fabricInstance = await ensureFabric()
 
   if (file.type.startsWith('image/')) {
-    // For local files, use FileReader (no CORS issues)
     const reader = new FileReader()
     reader.onload = (e) => {
       const img = new Image()
@@ -547,7 +1200,6 @@ const handleFile = async (file) => {
     reader.readAsText(file)
   }
 }
-
 
 const addObjectToDesignLayer = (obj) => {
   obj.set({ selectable: true, evented: true })
@@ -594,45 +1246,136 @@ const addText = async () => {
   updateObjectBorder(text)
 }
 
-// Colors
+// Colors (fallback for "no variations")
 const changeShirtColor = (index) => {
   selectedColor.value = index
   canvas.backgroundColor = colors[index].hex
   canvas.renderAll()
 }
-const textColors = [
-  { name: 'Schwarz', hex: '#000000' },
-  { name: 'Weiß', hex: '#ffffff' },
-  { name: 'Rot', hex: '#e53935' },
-  { name: 'Blau', hex: '#1976d2' },
-  { name: 'Grün', hex: '#6bbf59' },
-  { name: 'Gelb', hex: '#ffe600' },
-  { name: 'Orange', hex: '#ff7a00' },
-  { name: 'Pink', hex: '#D8127D' },
-  { name: 'Lila', hex: '#8e24aa' },
-  { name: 'Grau', hex: '#666666' },
-  { name: 'Navy', hex: '#0a3a47' },
-  { name: 'Türkis', hex: '#30d5c8' },
-]
 
-// Common web-safe fonts for quick selection
-const availableFonts = [
-  'Arial',
-  'Helvetica',
-  'Times New Roman',
-  'Georgia',
-  'Courier New',
-  'Verdana',
-  'Tahoma',
-  'Trebuchet MS',
-  'Impact',
-  'Lucida Sans Unicode',
-  'Garamond',
-  'Palatino Linotype',
-  'Century Gothic',
-  'Calibri',
-  'Comic Sans MS'
-]
+// Variations
+const selectVariation = (variation) => {
+  selectedVariation.value = variation
+}
+
+// ---------- Pantone + Dominant Color ----------
+
+// Intensive color mapping for better visibility
+const PANTONE_MAP = {
+  // Single letter codes
+  'C': '#000000',     // Black
+  'W': '#FFFFFF',     // White
+  'R': '#FF0000',     // Red
+  'B': '#0000FF',     // Blue
+  'G': '#00FF00',     // Green
+  'Y': '#FFFF00',     // Yellow
+  'P': '#00FF00',     // Green
+
+  // 4-digit codes - more intensive colors
+  '7503C': '#FF1493', // Deep Pink
+  '2166C': '#0066CC', // Bright Blue
+  '1655C': '#FF4500', // Orange Red
+  '2766C': '#0000FF', // Blue
+  '1205C': '#FFD700', // Gold
+  '2410C': '#8B4513', // Saddle Brown
+  '2708C': '#00FF00', // Lime
+  '5115C': '#800080', // Purple
+
+  // 3-digit + letter codes - more intensive
+  '186C': '#DC143C',  // Crimson
+  '286C': '#0000FF',  // Blue
+  '355C': '#FF0000',  // Red
+  '348C': '#00FF00',  // Green
+  '116C': '#FFD700',  // Gold
+  '127C': '#FFD700',  // Gold
+
+  // Additional intensive colors
+  '312C': '#00BFFF',  // Deep Sky Blue
+  '2587C': '#8B4513', // Saddle Brown
+  '200C': '#DC143C',  // Crimson
+  '428C': '#708090',  // Slate Gray
+  '378C': '#00FF00',  // Lime
+  '264C': '#00FFFF',  // Cyan
+  '214C': '#8B4513',  // Saddle Brown
+  '431C': '#8A2BE2',  // Blue Violet
+  '216C': '#00FF00',  // Lime
+  '560C': '#228B22',  // Forest Green
+  
+  // 3-digit codes (for consistency)
+  '186': '#DC143C',   // Crimson
+  '286': '#0000FF',   // Blue
+  '355': '#FF0000',   // Red
+  '348': '#00FF00',   // Green
+  '116': '#FFD700',   // Gold
+  '127': '#FFD700',   // Gold
+}
+
+// Normalize common inputs like "Pantone 286 C", "286 c", "286"
+function normalizePantone(input) {
+  if (!input) return null
+  let s = String(input).toUpperCase().trim()
+  s = s.replace(/^PANTONE\s*/,'').replace(/^PMS\s*/,'').replace(/\s+/g,'')
+  if (/^\d{3,4}$/.test(s)) s = s + 'C'
+  return s
+}
+
+// If you still want to try Pantone first (optional):
+function getColorFromCode(code) {
+  const norm = normalizePantone(code)
+  if (!norm) return null
+  return PANTONE_MAP[norm] || null
+}
+
+// Average color from image via canvas (no dependency)
+const _avgCache = new Map()
+async function getDominantHex(url) {
+  if (!url) return '#cccccc'
+  if (_avgCache.has(url)) return _avgCache.get(url)
+  try {
+    const hex = await averageImageColor(url)
+    _avgCache.set(url, hex)
+    return hex
+  } catch {
+    return '#cccccc'
+  }
+}
+
+// Downsampled average to keep it fast
+function averageImageColor(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      const w = 40, h = 40
+      const c = document.createElement('canvas')
+      c.width = w; c.height = h
+      const ctx = c.getContext('2d', { willReadFrequently: true })
+      // cover strategy similar to CSS background-size: contain (already)
+      ctx.drawImage(img, 0, 0, w, h)
+      const data = ctx.getImageData(0, 0, w, h).data
+      let r = 0, g = 0, b = 0, count = 0
+      for (let i = 0; i < data.length; i += 4) {
+        const alpha = data[i + 3]
+        if (alpha < 10) continue // ignore fully transparent pixels
+        r += data[i]
+        g += data[i + 1]
+        b += data[i + 2]
+        count++
+      }
+      if (!count) return resolve('#cccccc')
+      r = Math.round(r / count)
+      g = Math.round(g / count)
+      b = Math.round(b / count)
+      resolve(rgbToHex(r, g, b))
+    }
+    img.onerror = reject
+    img.src = src
+  })
+}
+function rgbToHex(r, g, b) {
+  const toHex = (n) => n.toString(16).padStart(2, '0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
 
 // ---------- Utility ----------
 function bringToTop(obj) {
@@ -651,7 +1394,6 @@ function bringDesignObjectsToFront() {
 
 function bringPolygonUIToFront() {
   if (!canvas) return
-  // Bring polygon overlay, polyline, markers, and control points above everything
   if (polygonOverlay) canvas.bringToFront(polygonOverlay)
   if (polylineOverlay) canvas.bringToFront(polylineOverlay)
   pointMarkers.forEach(p => canvas.bringToFront(p))
@@ -673,6 +1415,7 @@ const onSelection = () => {
     }
     rememberTransform(active)
   }
+
 }
 const onSelectionCleared = () => { selectedObject.value = null }
 
@@ -731,11 +1474,11 @@ const zoomOut = () => { const z = canvas.getZoom(); canvas.setZoom(Math.max(z / 
 const resetView = () => { canvas.setZoom(1); canvas.setViewportTransform([1,0,0,1,0,0]); canvas.requestRenderAll() }
 
 // Export
-const exportDesign = () => {
-  // Ensure everything is visible for export
+const exportDesign = async () => {
   const oldClip = canvas.clipPath
   canvas.clipPath = null
   canvas.discardActiveObject()
+
   // Hide polygon UI
   const toHide = []
   if (polygonOverlay) { toHide.push({ o: polygonOverlay, v: polygonOverlay.visible }); polygonOverlay.visible = false }
@@ -744,17 +1487,83 @@ const exportDesign = () => {
   if (Array.isArray(polygonControlPoints)) polygonControlPoints.forEach(cp => { toHide.push({ o: cp, v: cp.visible }); cp.visible = false })
 
   canvas.requestRenderAll()
-  // Export full canvas (shirt + design objects), without polygon UI
-  const dataUrl = canvas.toDataURL({ format: 'png', quality: 1 })
-  const link = document.createElement('a')
-  link.href = dataUrl
-  link.download = 'design_export.png'
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  // Restore clip if needed
+
+  try {
+    const compositeCanvas = document.createElement('canvas')
+    const ctx = compositeCanvas.getContext('2d')
+
+    compositeCanvas.width = canvas.width
+    compositeCanvas.height = canvas.height
+
+    const backgroundImageUrl = selectedVariation.value?.image || selectedProduct.value?.image || DEFAULT_BG_URL
+
+    const backgroundImg = new Image()
+    backgroundImg.crossOrigin = 'anonymous'
+
+    await new Promise((resolve, reject) => {
+      backgroundImg.onload = () => {
+        const imgAspect = backgroundImg.width / backgroundImg.height
+        const canvasAspect = compositeCanvas.width / compositeCanvas.height
+
+        let drawWidth, drawHeight, drawX, drawY
+        if (imgAspect > canvasAspect) {
+          drawWidth = compositeCanvas.width
+          drawHeight = drawWidth / imgAspect
+          drawX = 0
+          drawY = (compositeCanvas.height - drawHeight) / 2
+        } else {
+          drawHeight = compositeCanvas.height
+          drawWidth = drawHeight * imgAspect
+          drawX = (compositeCanvas.width - drawWidth) / 2
+          drawY = 0
+        }
+
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, compositeCanvas.width, compositeCanvas.height)
+        ctx.drawImage(backgroundImg, drawX, drawY, drawWidth, drawHeight)
+        resolve()
+      }
+      backgroundImg.onerror = () => {
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, compositeCanvas.width, compositeCanvas.height)
+        resolve()
+      }
+      backgroundImg.src = backgroundImageUrl
+    })
+
+    const designDataUrl = canvas.toDataURL({ format: 'png', quality: 1 })
+    const designImg = new Image()
+
+    await new Promise((resolve, reject) => {
+      designImg.onload = () => {
+        ctx.drawImage(designImg, 0, 0)
+        resolve()
+      }
+      designImg.onerror = reject
+      designImg.src = designDataUrl
+    })
+
+    const finalDataUrl = compositeCanvas.toDataURL({ format: 'png', quality: 1 })
+    const link = document.createElement('a')
+    link.href = finalDataUrl
+    const variationSuffix = selectedVariation.value?.colorCode ? `_${selectedVariation.value.colorCode}` : ''
+    link.download = `design_${selectedProduct.value?.name || 'product'}${variationSuffix}_${new Date().getTime()}.png`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+
+  } catch (error) {
+    console.error('Error creating composite image:', error)
+    const dataUrl = canvas.toDataURL({ format: 'png', quality: 1 })
+    const link = document.createElement('a')
+    link.href = dataUrl
+    link.download = 'design_export.png'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
   canvas.clipPath = oldClip
-  // Restore polygon UI visibility
   toHide.forEach(({ o, v }) => { o.visible = v })
   canvas.requestRenderAll()
 }
@@ -799,7 +1608,6 @@ const onKeyDown = (e) => {
   if (isAdminMode.value) {
     if (e.key === 'Enter' && isDrawingPolygon.value) {
       e.preventDefault()
-      // finish polygon: switch to edit mode
       isDrawingPolygon.value = false
       isEditingArea.value = true
       canvas.selection = true
@@ -827,8 +1635,6 @@ const onKeyDown = (e) => {
   }
 }
 
-
-
 // Simplified polygon controls
 const polygonButtonTitle = computed(() => {
   if (isDrawingPolygon.value) return 'Punkt setzen (Enter fertig)'
@@ -845,7 +1651,6 @@ function handlePolygonButton() {
     isAdminMode.value = true
   }
   if (!isDrawingPolygon.value && !isEditingArea.value) {
-    // start draw mode
     isDrawingPolygon.value = true
     canvas.discardActiveObject()
     canvas.selection = false
@@ -859,7 +1664,6 @@ function handlePolygonButton() {
     return
   }
   if (isDrawingPolygon.value) {
-    // finish drawing -> edit mode
     isDrawingPolygon.value = false
     isEditingArea.value = true
     canvas.selection = true
@@ -871,7 +1675,6 @@ function handlePolygonButton() {
     return
   }
   if (isEditingArea.value) {
-    // leave edit mode
     isEditingArea.value = false
     clearPolygonControlPoints()
     removePolylineOverlay()
@@ -888,22 +1691,6 @@ function toggleEditPolygon() {
     clearPolygonControlPoints()
   }
 }
-
-// ---------- Polygon / Clip ----------
-const toggleAdminMode = () => {
-  isAdminMode.value = !isAdminMode.value
-  if (!isAdminMode.value) {
-    isEditingArea.value = false
-    isDrawingPolygon.value = false
-    clearPolygonControlPoints()
-  }
-}
-
-const toggleAreaEditing = () => {}
-
-const togglePolygonMode = () => {}
-
-const finishPolygon = () => {}
 
 // Overlays & Marker
 function drawPointMarkers() {
@@ -1019,15 +1806,14 @@ function clearPolygonControlPoints() {
   canvas.requestRenderAll()
 }
 
-// ClipPath anwenden
+// ClipPath (disabled visually to show full images in your flow)
 function applyClipPathFromCustomPolygon() {
-  // Temporarily disable visual clipping to avoid cutting off images
   canvas.clipPath = null
   clipPolygon = null
   canvas.requestRenderAll()
 }
 
-// Persistenz
+// Persistenz (optional store)
 function normalizePoints(points) {
   const w = canvas.width, h = canvas.height
   return points.map(p => ({ x: p.x / w, y: p.y / h }))
@@ -1065,6 +1851,7 @@ async function savePlacementArea() {
   applyClipPathFromCustomPolygon()
 }
 async function loadPlacementArea() {
+  // Load polygon data
   const data = await loadPolygonFromStore(String(props.productId))
   if (data && Array.isArray(data.points) && data.points.length >= 3) {
     customPolygon.value = denormalizePoints(data.points)
@@ -1073,6 +1860,9 @@ async function loadPlacementArea() {
     drawPolygonOverlay()
     applyClipPathFromCustomPolygon()
   }
+  
+  // Load printing areas
+  await loadPrintingAreas()
 }
 function clearPlacementArea() {
   customPolygon.value = []
@@ -1082,7 +1872,7 @@ function clearPlacementArea() {
   applyClipPathFromCustomPolygon()
 }
 
-// ---------- Placement-Validation ----------
+// Validation
 function pointInPolygon(x, y, polygon) {
   let inside = false
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
@@ -1109,29 +1899,6 @@ function rememberTransform(obj) {
     left: obj.left, top: obj.top, scaleX: obj.scaleX, scaleY: obj.scaleY, angle: obj.angle || 0
   })
 }
-function validateAndMaybeRevert(obj) {
-  if (!obj) return
-  if (obj.name !== 'DESIGN_OBJECT') return
-
-  const hasPoly = customPolygon.value.length >= 3
-  if (!hasPoly) {
-    updateObjectBorder(obj)
-    rememberTransform(obj)
-    return
-  }
-
-  const inside = objectFullyInsidePolygon(obj, customPolygon.value)
-  if (inside) {
-    updateObjectBorder(obj)
-    rememberTransform(obj)
-  } else {
-    // Allow movement outside polygon but show warning/border
-    obj.set({ stroke: '#e53e3e', strokeWidth: 3 })
-    showWarning.value = true
-    warningMessage.value = 'Bitte innerhalb der Fläche platzieren.'
-    canvas.requestRenderAll()
-  }
-}
 function updateObjectBorder(object) {
   if (!object) return
   let ok = true
@@ -1146,7 +1913,7 @@ function updateObjectBorder(object) {
   canvas.requestRenderAll()
 }
 
-// Canvas an Fenstergröße anpassen
+// Resize
 function handleResize() {
   if (!canvas || !canvasHost.value) return
   const w = canvasHost.value.offsetWidth
@@ -1156,17 +1923,31 @@ function handleResize() {
   canvas.requestRenderAll()
 }
 
-// Lifecycle
+  // Lifecycle
 onMounted(async () => {
   await nextTick()
   await initCanvas()
   await loadPlacementArea()
   window.addEventListener('resize', handleResize)
+  window.addEventListener('keydown', handleKeyDown)
 })
 onUnmounted(() => {
   if (canvas) canvas.dispose()
   window.removeEventListener('resize', handleResize)
+  window.removeEventListener('keydown', handleKeyDown)
 })
+
+function handleKeyDown(e) {
+  // Delete selected printing area with Delete key
+  if (e.key === 'Delete' && printingAreaMode.value && canvas) {
+    const activeObject = canvas.getActiveObject()
+    if (activeObject && activeObject.name === 'PRINTING_AREA') {
+      const index = activeObject.data.index
+      printingAreas.value.splice(index, 1)
+      renderPrintingAreas()
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -1180,3 +1961,4 @@ input[type="range"] { @apply w-full h-2 bg-gray-200 rounded-lg appearance-none c
 input[type="range"]::-webkit-slider-thumb { @apply appearance-none h-4 w-4 rounded-full bg-[#D8127D] cursor-pointer; }
 input[type="range"]::-moz-range-thumb { @apply h-4 w-4 rounded-full bg-[#D8127D] cursor-pointer border-0; }
 </style>
+

@@ -68,6 +68,24 @@ const wooService = {
       console.error('Error fetching product:', err)
       throw err
     }
+  },
+
+  async fetchProductVariations(productId) {
+    try {
+      const response = await fetch(
+        `${WOO_CONFIG.baseUrl}/products/${productId}/variations?per_page=100`,
+        {
+          headers: {
+            'Authorization': 'Basic ' + btoa(`${WOO_CONFIG.consumerKey}:${WOO_CONFIG.consumerSecret}`)
+          }
+        }
+      )
+      if (!response.ok) throw new Error('Failed to fetch product variations')
+      return await response.json()
+    } catch (err) {
+      console.error('Error fetching product variations:', err)
+      throw err
+    }
   }
 }
 
@@ -86,6 +104,53 @@ const getFallbackImage = (category) => {
   return fallbackImages[category] || fallbackImages.clothing
 }
 
+// Format product variation data from WooCommerce
+const formatVariation = (variation) => {
+  // Extract color code from description (formats: 7503C, 2166C, C, etc.)
+  // Try multiple patterns to catch different formats
+  let colorCode = null
+  
+  // Try 4-digit + letter (7503C, 2166C)
+  let match = variation.description?.match(/(\d{4}[A-Z])/i)
+  if (match) {
+    colorCode = match[1]
+  } else {
+    // Try 3-digit + letter (186C, 286C)
+    match = variation.description?.match(/(\d{3}[A-Z])/i)
+    if (match) {
+      colorCode = match[1]
+    } else {
+      // Try single letter (C, W, R, B)
+      match = variation.description?.match(/\b([A-Z])\b/i)
+      if (match) {
+        colorCode = match[1]
+      }
+    }
+  }
+  
+  // Debug logging
+  if (colorCode) {
+    console.log(`Extracted color code "${colorCode}" from description: "${variation.description}"`)
+  } else {
+    console.log(`No color code found in description: "${variation.description}"`)
+  }
+  
+  return {
+    id: variation.id,
+    name: variation.name,
+    description: variation.description,
+    colorCode: colorCode,
+    image: variation.image?.src || null,
+    price: variation.price,
+    regular_price: variation.regular_price,
+    sale_price: variation.sale_price,
+    stock_status: variation.stock_status,
+    stock_quantity: variation.stock_quantity,
+    sku: variation.sku,
+    attributes: variation.attributes || []
+  }
+}
+
 // Format product data from WooCommerce
 const formatProduct = (product) => {
   const customizable = product.meta_data?.some(meta => meta.key === '_customizable' && meta.value === 'yes')
@@ -93,11 +158,28 @@ const formatProduct = (product) => {
   // Get category name for fallback image
   const categoryName = product.categories[0]?.name?.toLowerCase() || 'clothing'
   
+  // Debug price fields
+  console.log('Product price fields:', {
+    price: product.price,
+    regular_price: product.regular_price,
+    sale_price: product.sale_price,
+    price_html: product.price_html
+  })
+  
+  // Use regular_price if price is empty, or sale_price if on sale
+  let displayPrice = product.price
+  if (!displayPrice || displayPrice === '') {
+    displayPrice = product.sale_price && product.sale_price !== '' ? product.sale_price : product.regular_price
+  }
+  
+  console.log('Selected display price:', displayPrice)
+  
   return {
     id: product.id,
     category: product.categories[0]?.id.toString() || 'all',
+    categories: product.categories || [], // Keep full category objects
     name: product.name,
-    price: product.price,
+    price: displayPrice,
     image: product.images[0]?.src || getFallbackImage(categoryName),
     description: product.description,
     gallery: product.images.map(img => img.src),
@@ -117,6 +199,7 @@ export const useWooCommerce = () => {
   return {
     wooService,
     formatProduct,
+    formatVariation,
     getFallbackImage
   }
 }

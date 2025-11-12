@@ -66,6 +66,19 @@
             v-if="currentPage === 'Grossbestellung'"
           />
 
+          <!-- UNTERNEHMEN PAGE -->
+          <UnternehmenPage 
+            v-if="currentPage === 'Unternehmen'"
+            @navigate="handleNavigation"
+          />
+
+          <!-- LEISTUNGEN PAGE -->
+          <LeistungenPage 
+            v-if="currentPage === 'Leistungen'"
+            @navigate="handleNavigation"
+          />
+
+
           <!-- CHECKOUT PAGE -->
           <CheckoutPage 
             v-if="currentPage === 'Checkout'"
@@ -85,7 +98,7 @@
           />
 
           <!-- OTHER PAGES (Placeholders) -->
-          <div v-if="!['Home', 'ReadyToBuy', 'CustomizationCreator', 'Creator', 'ProductDetail', 'Grossbestellung', 'Checkout', 'OrderConfirmation'].includes(currentPage)">
+          <div v-if="!['Home', 'ReadyToBuy', 'CustomizationCreator', 'Creator', 'ProductDetail', 'Grossbestellung', 'Unternehmen', 'Leistungen', 'Checkout', 'OrderConfirmation'].includes(currentPage)">
             <div class="container mx-auto px-6 py-24 text-center">
               <h1 class="text-4xl font-bold mb-4">{{ currentPage }}</h1>
               <p class="text-lg text-gray-600">Diese Seite befindet sich im Aufbau.</p>
@@ -150,6 +163,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { useCart } from '~/composables/useCart.js'
 import NotificationBar from '~/components/NotificationBar.vue'
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
@@ -162,6 +176,8 @@ import ProductDetailPage from '~/pages/product-detail.vue'
 import GrossbestellungPage from '~/pages/grossbestellung.vue'
 import CheckoutPage from '~/pages/checkout.vue'
 import OrderConfirmationPage from '~/pages/order-confirmation.vue'
+import UnternehmenPage from '~/pages/unternehmen.vue'
+import LeistungenPage from '~/pages/leistungen.vue'
 
 // WooCommerce API Configuration
 const WOO_CONFIG = {
@@ -170,13 +186,30 @@ const WOO_CONFIG = {
   consumerSecret: 'cs_e7d6fe86192848c4d06c5b0eb4692d32d2b42a50'
 }
 
+// Use cart composable
+const {
+  cart,
+  savedForLater,
+  recentlyViewed,
+  cartTotal,
+  cartItemCount,
+  shippingCost,
+  remainingForFreeShipping,
+  freeShippingProgress,
+  addToCart,
+  removeFromCart,
+  updateCartItemQuantity,
+  clearCart,
+  moveToSavedForLater,
+  moveToCart,
+  addToRecentlyViewed,
+  loadCartData
+} = useCart()
+
 // State
 const currentPage = ref('Home')
 const selectedProduct = ref(null)
-const cart = ref([])
 const isCartOpen = ref(false)
-const savedForLater = ref([])
-const recentlyViewed = ref([])
 
 // Data
 const categories = ref([])
@@ -257,16 +290,6 @@ const wooService = {
 }
 
 // Computed properties
-const cartTotal = computed(() => {
-  return cart.value.reduce((total, item) => {
-    return total + (parseFloat(item.price) * item.quantity)
-  }, 0)
-})
-
-const cartItemCount = computed(() => {
-  return cart.value.reduce((count, item) => count + item.quantity, 0)
-})
-
 const totalPages = computed(() => {
   return Math.ceil(totalProducts.value / itemsPerPage.value)
 })
@@ -363,58 +386,7 @@ const handleSelectProduct = (product) => {
   addToRecentlyViewed(product)
 }
 
-// Cart Methods
-const addToCart = (product) => {
-  cart.value.push({
-    ...product,
-    quantity: product.quantity || 1,
-    selectedSize: product.selectedSize || null,
-    selectedColor: product.selectedColor || null
-  })
-  localStorage.setItem('cart', JSON.stringify(cart.value))
-}
-
-const removeFromCart = (index) => {
-  cart.value.splice(index, 1)
-  localStorage.setItem('cart', JSON.stringify(cart.value))
-}
-
-const updateCartItemQuantity = ({ index, quantity }) => {
-  if (quantity < 1) return
-  cart.value[index].quantity = quantity
-  localStorage.setItem('cart', JSON.stringify(cart.value))
-}
-
-const clearCart = () => {
-  cart.value = []
-  localStorage.setItem('cart', JSON.stringify(cart.value))
-}
-
-const moveToSavedForLater = (index) => {
-  const item = cart.value[index]
-  savedForLater.value.push(item)
-  removeFromCart(index)
-  localStorage.setItem('savedForLater', JSON.stringify(savedForLater.value))
-}
-
-const moveToCart = (index) => {
-  const item = savedForLater.value[index]
-  addToCart(item)
-  savedForLater.value.splice(index, 1)
-  localStorage.setItem('savedForLater', JSON.stringify(savedForLater.value))
-}
-
-const addToRecentlyViewed = (product) => {
-  const index = recentlyViewed.value.findIndex(p => p.id === product.id)
-  if (index > -1) {
-    recentlyViewed.value.splice(index, 1)
-  }
-  recentlyViewed.value.unshift(product)
-  if (recentlyViewed.value.length > 4) {
-    recentlyViewed.value.pop()
-  }
-  localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed.value))
-}
+// Cart methods are now provided by useCart composable
 
 // Checkout Methods
 const proceedToCheckout = () => {
@@ -444,14 +416,10 @@ const handleUpdateFilters = (filters) => {
 
 // Lifecycle
 onMounted(() => {
-  const savedCart = localStorage.getItem('cart')
-  const savedForLaterData = localStorage.getItem('savedForLater')
-  const recentlyViewedData = localStorage.getItem('recentlyViewed')
+  // Load cart data from localStorage using the composable
+  loadCartData()
   
-  if (savedCart) cart.value = JSON.parse(savedCart)
-  if (savedForLaterData) savedForLater.value = JSON.parse(savedForLaterData)
-  if (recentlyViewedData) recentlyViewed.value = JSON.parse(recentlyViewedData)
-  
+  // Initialize other data
   initializeData()
 })
 </script>

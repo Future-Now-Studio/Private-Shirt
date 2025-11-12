@@ -64,7 +64,7 @@
                         class="btn bg-white text-gray-900">
                   Details anzeigen
                 </button>
-                <button @click.stop="$emit('addToCart', product)" 
+                <button @click.stop="handleAddToCart(product)" 
                         class="btn bg-[#D8127D] text-white">
                   In den Warenkorb
                 </button>
@@ -172,6 +172,11 @@ const filteredReadyToBuyProducts = computed(() => {
 })
 
 // Methods
+const handleAddToCart = (product) => {
+  emit('addToCart', product)
+  alert('Produkt wurde zum Warenkorb hinzugefügt!')
+}
+
 const handleImageError = (event, category) => {
   const fallbackImages = {
     't-shirts': 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop',

@@ -1,32 +1,40 @@
-import { defineEventHandler, getRouterParam } from 'h3'
-import { promises as fs } from 'fs'
-import path from 'path'
-
-const DATA_DIR = path.join(process.cwd(), 'server', 'data')
-const DATA_FILE = path.join(DATA_DIR, 'placement-areas.json')
-
-async function ensureDataFile() {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true })
-    await fs.access(DATA_FILE)
-  } catch {
-    await fs.writeFile(DATA_FILE, JSON.stringify({}), 'utf8')
-  }
-}
-
-async function readStore(): Promise<Record<string, any>> {
-  await ensureDataFile()
-  const raw = await fs.readFile(DATA_FILE, 'utf8')
-  try {
-    return JSON.parse(raw || '{}')
-  } catch {
-    return {}
-  }
-}
-
 export default defineEventHandler(async (event) => {
-  const id = String(getRouterParam(event, 'id') || '')
-  if (!id) return { points: [], updatedAt: null }
-  const store = await readStore()
-  return store[id] || { points: [], updatedAt: null }
-}) 
+  const productId = getRouterParam(event, 'id')
+  
+  if (!productId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Product ID is required'
+    })
+  }
+
+  try {
+    // Read from the placement-areas.json file
+    const fs = await import('fs/promises')
+    const path = await import('path')
+    
+    const dataPath = path.join(process.cwd(), 'server/data/placement-areas.json')
+    
+    let placementAreas = {}
+    try {
+      const data = await fs.readFile(dataPath, 'utf-8')
+      placementAreas = JSON.parse(data)
+    } catch (error) {
+      // File doesn't exist yet, return empty data
+      placementAreas = {}
+    }
+    
+    const productAreas = placementAreas[productId] || { printingAreas: [] }
+    
+    return {
+      productId,
+      printingAreas: productAreas.printingAreas || []
+    }
+  } catch (error) {
+    console.error('Error reading placement areas:', error)
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Failed to read placement areas'
+    })
+  }
+})

@@ -266,7 +266,7 @@
 
     
     <!-- Store Locations Section -->
-    <section class="py-16 sm:py-24 bg-gray-50">
+    <section id="locations-section" class="py-16 sm:py-24 bg-gray-50">
       <div class="container mx-auto px-6 text-center">
         <!-- New Pin Needle SVG -->
         <div class="mb-8">
@@ -275,46 +275,100 @@
           </svg>
         </div>
 
-        <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-12 relative inline-block leading-tight">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 relative inline-block leading-tight">
           Zuhause, wo du es bist
           <span class="block absolute -bottom-3 left-0 w-full h-2 bg-[#D8127D] transform skew-x-12 opacity-75"></span>
         </h2>
+        
+        <!-- Service Description -->
+        <div class="max-w-4xl mx-auto mb-12">
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            Ob online oder in unseren Shops, wir sind überall für Sie da.
+          </p>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            Wir garantieren Ihnen qualitativ hochwertige Produkte und top Kundenservice für Ihre individuellen Ideen. Rufen Sie uns an oder schreiben Sie uns eine E-Mail. Wir freuen uns.
+          </p>
+        </div>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
           <!-- Europa Passage Store -->
-          <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 text-left">
-            <img src="/assets/20210421_001_Private_Shirt_Hamburg.webp" 
-                 alt="Europa Passage Storefront" 
-                 class="w-full h-48 object-cover rounded-lg mb-6 shadow-sm">
-            <h3 class="text-2xl font-bold text-[#D8127D] mb-4">Europa Passage</h3>
-            <p class="text-lg font-medium text-gray-800 mb-2">Private Shirt Europa Passage</p>
-            <p class="text-gray-600 mb-4">
-              <a href="https://maps.google.com/?q=Ballindamm 40, 20095 Hamburg" target="_blank" class="text-[#D8127D] hover:underline">
-                Ballindamm 40, 20095 Hamburg
-              </a>
-            </p>
+          <div class="bg-white rounded-lg shadow-md border border-gray-200 text-left overflow-hidden">
+            <!-- Image -->
+            <div>
+              <img src="/assets/20210421_001_Private_Shirt_Hamburg.webp" 
+                   alt="Europa Passage Storefront" 
+                   class="w-full h-48 object-cover">
+            </div>
             
-            <p class="text-gray-700 mb-2"><span class="font-semibold">Tel:</span> <a href="tel:+494032873804" class="text-[#D8127D] hover:underline">040 328 738 04</a></p>
-            <p class="text-gray-700 mb-2"><span class="font-semibold">Fax:</span> 040 328 738 15</p>
-            <p class="text-gray-700"><span class="font-semibold">E-Mail:</span> <a href="mailto:europa-passage@private-shirt.de" class="text-[#D8127D] hover:underline">europa-passage@private-shirt.de</a></p>
+            <!-- Content -->
+            <div class="p-8">
+              <!-- Text Content -->
+              <div class="mb-6">
+                <h3 class="text-2xl font-bold text-[#D8127D] mb-4">Europa Passage</h3>
+                <p class="text-gray-600 mb-4">
+                  <a href="https://maps.google.com/?q=Ballindamm 40, 20095 Hamburg" target="_blank" class="text-[#D8127D] hover:underline">
+                    Ballindamm 40, 20095 Hamburg
+                  </a>
+                </p>
+                
+                <p class="text-gray-700 mb-2"><span class="font-semibold">Tel:</span> <a href="tel:+494032873804" class="text-[#D8127D] hover:underline">040 328 738 04</a></p>
+                <p class="text-gray-700 mb-2"><span class="font-semibold">Fax:</span> 040 328 738 15</p>
+                <p class="text-gray-700"><span class="font-semibold">E-Mail:</span> <a href="mailto:europa-passage@private-shirt.de" class="text-[#D8127D] hover:underline">europa-passage@private-shirt.de</a></p>
+              </div>
+              
+              <!-- Map -->
+              <div>
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2368.5!2d9.78016789726562!3d53.5523408!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b18f1dc6346d17%3A0xb2e7e85ab405c7a7!2sPrivate%20Shirt!5e1!3m2!1sen!2sde!4v1760116099275!5m2!1sen!2sde" 
+                  width="100%" 
+                  height="200" 
+                  style="border:0; border-radius: 0.5rem;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+            </div>
           </div>
 
           <!-- Altona Store -->
-          <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 text-left">
-            <img src="/assets/20201123_193242.webp" 
-                 alt="Altona Storefront" 
-                 class="w-full h-48 object-cover rounded-lg mb-6 shadow-sm">
-            <h3 class="text-2xl font-bold text-[#D8127D] mb-4">Altona</h3>
-            <p class="text-lg font-medium text-gray-800 mb-2">EKZ Mercado</p>
-            <p class="text-lg font-medium text-gray-800 mb-2">Private Shirt Altona</p>
-            <p class="text-gray-600 mb-4">
-              <a href="https://maps.google.com/?q=Ottenser Hauptstraße 10, 22765 Hamburg" target="_blank" class="text-[#D8127D] hover:underline">
-                Ottenser Hauptstraße 10, 22765 Hamburg
-              </a>
-            </p>
+          <div class="bg-white rounded-lg shadow-md border border-gray-200 text-left overflow-hidden">
+            <!-- Image -->
+            <div>
+              <img src="/assets/20201123_193242.webp" 
+                   alt="Altona Storefront" 
+                   class="w-full h-48 object-cover">
+            </div>
             
-            <p class="text-gray-700 mb-2"><span class="font-semibold">Tel:</span> <a href="tel:+494039907778" class="text-[#D8127D] hover:underline">040 399 077 78</a></p>
-            <p class="text-gray-700 mb-2"><span class="font-semibold">Fax:</span> 040 399 081 16</p>
-            <p class="text-gray-700"><span class="font-semibold">E-Mail:</span> <a href="mailto:altona@private-shirt.de" class="text-[#D8127D] hover:underline">altona@private-shirt.de</a></p>
+            <!-- Content -->
+            <div class="p-8">
+              <!-- Text Content -->
+              <div class="mb-6">
+                <h3 class="text-2xl font-bold text-[#D8127D] mb-4">Mercado Altona</h3>
+                <p class="text-gray-600 mb-4">
+                  <a href="https://maps.google.com/?q=Ottenser Hauptstraße 10, 22765 Hamburg" target="_blank" class="text-[#D8127D] hover:underline">
+                    Ottenser Hauptstraße 10, 22765 Hamburg
+                  </a>
+                </p>
+                
+                <p class="text-gray-700 mb-2"><span class="font-semibold">Tel:</span> <a href="tel:+494039907778" class="text-[#D8127D] hover:underline">040 399 077 78</a></p>
+                <p class="text-gray-700 mb-2"><span class="font-semibold">Fax:</span> 040 399 081 16</p>
+                <p class="text-gray-700"><span class="font-semibold">E-Mail:</span> <a href="mailto:altona@private-shirt.de" class="text-[#D8127D] hover:underline">altona@private-shirt.de</a></p>
+              </div>
+              
+              <!-- Map -->
+              <div>
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2368.5!2d9.951268743417247!3d53.54566741283561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b18585ff23b8bb%3A0x3a3a59770b6ae2fa!2sPrivate%20Shirt%20Hamburg%20Altona!5e1!3m2!1sen!2sde!4v1760116056355!5m2!1sen!2sde" 
+                  width="100%" 
+                  height="200" 
+                  style="border:0; border-radius: 0.5rem;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -337,7 +391,7 @@ const props = defineProps({
 })
 
 // Emits
-defineEmits(['navigate', 'selectProduct'])
+const emit = defineEmits(['navigate', 'selectProduct'])
 
 // State
 const productsPerSlide = ref(3)
@@ -345,6 +399,7 @@ const currentBestsellerPage = ref(0)
 const currentSummerPage = ref(0)
 const currentTopCustomersPage = ref(0)
 const currentReviewsPage = ref(0)
+
 
 // Computed
 const bestsellerProducts = computed(() => props.readyToBuyProducts.filter(p => p.tags.includes('bestseller')))
@@ -379,7 +434,7 @@ const features = ref([
   { title: 'Premiumdruck ab 1 Stück', description: 'Keine Mindestbestellmenge. Perfekt für Einzelstücke und Geschenke.', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>' },
   { title: 'Nachhaltige Textilien', description: 'Wir setzen auf Bio-Baumwolle und umweltfreundliche Materialien.', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343m11.314 11.314a8 8 0 00-11.314-11.314"/>' },
   { title: 'Versand in 2–4 Tagen', description: 'Schnelle Produktion und Lieferung mit unseren zuverlässigen Partnern.', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>' },
-  { title: 'Made in Germany', description: 'Druck und Veredelung finden direkt bei uns in Deutschland statt.', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M4 17v4M2 19h4M17 3v4M15 5h4M16 17v4M14 19h4"/>' }
+  { title: 'Made in Hamburg, Germany', description: 'Druck und Veredelung finden direkt bei uns in Deutschland statt.', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M4 17v4M2 19h4M17 3v4M15 5h4M16 17v4M14 19h4"/>' }
 ])
 
 // Top Customers Data

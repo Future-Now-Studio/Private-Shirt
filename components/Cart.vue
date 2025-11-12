@@ -149,7 +149,7 @@
 import { ref, computed } from 'vue'
 
 // Props
-defineProps({
+const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
@@ -169,7 +169,7 @@ defineProps({
 })
 
 // Emits
-defineEmits(['close', 'navigate', 'updateCart', 'removeFromCart', 'moveToSavedForLater', 'moveToCart', 'addToCart', 'proceedToCheckout'])
+const emit = defineEmits(['close', 'navigate', 'updateCart', 'removeFromCart', 'moveToSavedForLater', 'moveToCart', 'addToCart', 'proceedToCheckout'])
 
 // State
 const activeCartTab = ref('Warenkorb')
