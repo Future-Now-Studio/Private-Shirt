@@ -1,6 +1,4 @@
-import { d as defineEventHandler, g as getRouterParam, r as readBody } from '../../../../nitro/nitro.mjs';
-import { promises } from 'fs';
-import path from 'path';
+import { d as defineEventHandler, g as getRouterParam, c as createError, r as readBody } from '../../../../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -9,47 +7,53 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 
-const DATA_DIR = path.join(process.cwd(), "server", "data");
-const DATA_FILE = path.join(DATA_DIR, "placement-areas.json");
-async function ensureDataFile() {
-  try {
-    await promises.mkdir(DATA_DIR, { recursive: true });
-    await promises.access(DATA_FILE);
-  } catch {
-    await promises.writeFile(DATA_FILE, JSON.stringify({}), "utf8");
-  }
-}
-async function readStore() {
-  await ensureDataFile();
-  const raw = await promises.readFile(DATA_FILE, "utf8");
-  try {
-    return JSON.parse(raw || "{}");
-  } catch {
-    return {};
-  }
-}
-async function writeStore(store) {
-  await ensureDataFile();
-  await promises.writeFile(DATA_FILE, JSON.stringify(store, null, 2), "utf8");
-}
 const placementArea_put = defineEventHandler(async (event) => {
-  const id = String(getRouterParam(event, "id") || "");
-  if (!id) {
-    event.node.res.statusCode = 400;
-    return { error: "Missing product id" };
+  const productId = getRouterParam(event, "id");
+  if (!productId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Product ID is required"
+    });
   }
-  const body = await readBody(event);
-  if (!body || !Array.isArray(body.points)) {
-    event.node.res.statusCode = 400;
-    return { error: "Invalid payload: { points: Array<{x:number,y:number}>" };
+  try {
+    const body = await readBody(event);
+    const { printingAreas } = body;
+    if (!Array.isArray(printingAreas)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "printingAreas must be an array"
+      });
+    }
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const dataPath = path.join(process.cwd(), "server/data/placement-areas.json");
+    let placementAreas = {};
+    try {
+      const data = await fs.readFile(dataPath, "utf-8");
+      placementAreas = JSON.parse(data);
+    } catch (error) {
+      placementAreas = {};
+    }
+    placementAreas[productId] = {
+      printingAreas,
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    const dataDir = path.dirname(dataPath);
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.writeFile(dataPath, JSON.stringify(placementAreas, null, 2));
+    return {
+      success: true,
+      productId,
+      printingAreas,
+      message: "Printing areas saved successfully"
+    };
+  } catch (error) {
+    console.error("Error saving placement areas:", error);
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Failed to save placement areas"
+    });
   }
-  const store = await readStore();
-  store[id] = {
-    points: body.points,
-    updatedAt: body.updatedAt || (/* @__PURE__ */ new Date()).toISOString()
-  };
-  await writeStore(store);
-  return { ok: true };
 });
 
 export { placementArea_put as default };

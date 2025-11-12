@@ -40,12 +40,19 @@ const client_manifest = {
     "file": "shirt.DKYRlG6X.svg",
     "src": "assets/shirt.svg"
   },
+  "assets/sincerely-media-qeDcKFADdp8-unsplash.jpg": {
+    "resourceType": "image",
+    "prefetch": true,
+    "mimeType": "image/jpeg",
+    "file": "sincerely-media-qeDcKFADdp8-unsplash.CsvuLOn8.jpg",
+    "src": "assets/sincerely-media-qeDcKFADdp8-unsplash.jpg"
+  },
   "layouts/default.vue": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "CvP6T90y.js",
+    "file": "6xmA6sbu.js",
     "name": "default",
     "src": "layouts/default.vue",
     "isDynamicEntry": true,
@@ -77,16 +84,14 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "BYZrbJai.js",
+    "file": "C7u8iNyX.js",
     "name": "error-404",
     "src": "node_modules/nuxt/dist/app/components/error-404.vue",
     "isDynamicEntry": true,
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ],
-    "css": [
-      "error-404.4oxyXxx0.css"
-    ]
+    "css": []
   },
   "error-404.4oxyXxx0.css": {
     "file": "error-404.4oxyXxx0.css",
@@ -99,16 +104,14 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "CQyEt2Hf.js",
+    "file": "CflyPSCN.js",
     "name": "error-500",
     "src": "node_modules/nuxt/dist/app/components/error-500.vue",
     "isDynamicEntry": true,
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ],
-    "css": [
-      "error-500.CZqNkBuR.css"
-    ]
+    "css": []
   },
   "error-500.CZqNkBuR.css": {
     "file": "error-500.CZqNkBuR.css",
@@ -121,7 +124,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "6WpYqyfV.js",
+    "file": "Ch_Eb8YJ.js",
     "name": "entry",
     "src": "node_modules/nuxt/dist/app/entry.js",
     "isEntry": true,
@@ -132,7 +135,7 @@ const client_manifest = {
       "node_modules/nuxt/dist/app/components/error-500.vue"
     ],
     "css": [
-      "entry.jL7QAyYi.css"
+      "entry.Bq78CyN9.css"
     ],
     "assets": [
       "group-25.BH3ZzPJz.svg",
@@ -140,11 +143,13 @@ const client_manifest = {
       "20210421_001_Private_Shirt_Hamburg.B2S9bdWR.webp",
       "20201123_193242.CRFIwVki.webp",
       "shirt.DKYRlG6X.svg",
-      "printarea-kinder.BLE94HFQ.svg"
-    ]
+      "printarea-kinder.BLE94HFQ.svg",
+      "sincerely-media-qeDcKFADdp8-unsplash.CsvuLOn8.jpg"
+    ],
+    "_globalCSS": true
   },
-  "entry.jL7QAyYi.css": {
-    "file": "entry.jL7QAyYi.css",
+  "entry.Bq78CyN9.css": {
+    "file": "entry.Bq78CyN9.css",
     "resourceType": "style",
     "prefetch": true,
     "preload": true
@@ -183,6 +188,12 @@ const client_manifest = {
     "resourceType": "image",
     "prefetch": true,
     "mimeType": "image/svg+xml"
+  },
+  "sincerely-media-qeDcKFADdp8-unsplash.CsvuLOn8.jpg": {
+    "file": "sincerely-media-qeDcKFADdp8-unsplash.CsvuLOn8.jpg",
+    "resourceType": "image",
+    "prefetch": true,
+    "mimeType": "image/jpeg"
   }
 };
 
