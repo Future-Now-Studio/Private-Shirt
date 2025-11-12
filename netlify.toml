@@ -1,12 +1,8 @@
 [build]
-  command = "npm run build"
+  command = "npm run generate"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# Route all requests to Nitro server function for SSR
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
+# For SPA routing, _redirects in dist/public handles: /* /index.html 200
