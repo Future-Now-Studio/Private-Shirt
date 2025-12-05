@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-gsap>
         <!-- Hero Section -->
         <section class="bg-white">
           <div class="container mx-auto px-6 py-8 text-center">

@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-6 py-12">
+  <div class="container mx-auto px-6 py-12" v-gsap>
     <div class="max-w-4xl mx-auto">
       <h1 class="text-3xl font-bold mb-8">Zur Kasse</h1>
       

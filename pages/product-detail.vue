@@ -1,5 +1,5 @@
 <template>
-  <div v-if="selectedProduct" class="container mx-auto px-6 py-12">
+  <div v-if="selectedProduct" class="container mx-auto px-6 py-12" v-gsap>
     <!-- Breadcrumb Navigation -->
     <div class="flex items-center space-x-2 text-sm text-gray-500 mb-8">
       <a @click="$emit('navigate', 'Home')" class="hover:text-[#D8127D] cursor-pointer">Home</a>

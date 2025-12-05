@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-6 py-12">
+  <div class="container mx-auto px-6 py-12" v-gsap>
     <h1 class="text-4xl font-bold mb-2">Fertige Produkte</h1>
     <p class="text-lg text-gray-600 mb-10">Entdecke unsere Kollektion an fertigen Produkten.</p>
     

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-gsap>
     <!-- Step Indicator -->
     <div class="bg-white border-b">
       <div class="container mx-auto px-6 py-4">

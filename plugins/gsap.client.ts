@@ -18,16 +18,29 @@ export default defineNuxtPlugin((nuxtApp) => {
         } = opts
 
         gsap.set(el, { opacity, y })
-        ScrollTrigger.create({
-          trigger: el,
-          start: 'top 85%',
-          once: true,
-          onEnter: () => {
-            gsap.to(el, { opacity: 1, y: 0, duration, delay, ease })
-          }
-        })
+        const startPos = 'top 90%'
+        const animateIn = () => gsap.to(el, { opacity: 1, y: 0, duration, delay, ease })
+
+        // If already in view on mount, animate immediately
+        const rect = el.getBoundingClientRect()
+        if (rect.top < (window.innerHeight * 0.9)) {
+          animateIn()
+        } else {
+          ScrollTrigger.create({
+            trigger: el,
+            start: startPos,
+            once: true,
+            onEnter: animateIn
+          })
+        }
       }
     })
+
+    // Ensure triggers calculate correctly on route changes
+    nuxtApp.hook('page:finish', () => {
+      requestAnimationFrame(() => ScrollTrigger.refresh())
+    })
+    window.addEventListener('load', () => ScrollTrigger.refresh())
   }
 })
 

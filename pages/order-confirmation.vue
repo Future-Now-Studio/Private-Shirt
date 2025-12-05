@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-6 py-12">
+  <div class="container mx-auto px-6 py-12" v-gsap>
     <div class="max-w-2xl mx-auto text-center">
       <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
