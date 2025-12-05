@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-[#0a3a47] text-white">
+  <footer class="bg-[#0a3a47] text-white" v-gsap>
     <div class="container mx-auto px-6 py-12">
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
         <div class="col-span-2 md:col-span-4 lg:col-span-1 mb-6 lg:mb-0">

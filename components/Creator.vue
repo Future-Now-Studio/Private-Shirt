@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-gsap>
     <!-- Hero Section -->
     <section class="bg-gradient-to-br from-[#D8127D] to-[#b30f68] text-white py-20">
       <div class="container mx-auto px-6 text-center">

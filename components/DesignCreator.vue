@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-6 py-12">
+  <div class="container mx-auto px-6 py-12" v-gsap>
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Design Canvas -->
       <div class="lg:col-span-8">

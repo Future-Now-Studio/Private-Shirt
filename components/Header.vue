@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
+  <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm" v-gsap>
     <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
       <div class="text-2xl font-bold text-gray-900 cursor-pointer" @click="$emit('navigate', 'Home')">
         <img src="/assets/group-25.svg" 
