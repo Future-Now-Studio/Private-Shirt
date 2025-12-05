@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white text-center py-2 text-sm font-medium overflow-hidden relative h-8" v-gsap="{ y: 0, opacity: 0, duration: 0.6 }">
+  <div class="bg-gray-900 text-white text-center py-2 text-sm font-medium overflow-hidden relative h-8" data-aos="fade-down">
     <transition name="slide-fade" mode="out-in">
       <span :key="currentNotificationMessage">{{ notificationMessages[currentNotificationMessage] }}</span>
     </transition>

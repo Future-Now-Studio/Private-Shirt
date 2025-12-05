@@ -1,5 +1,5 @@
 <template>
-  <div v-gsap>
+  <div data-aos="fade-up">
     <!-- Hero Section -->
     <section class="relative h-[60vh] md:h-[50vh] flex flex-col lg:flex-row">
       <!-- Left side - White background with brand colors for text -->
@@ -33,7 +33,7 @@
     </section>
 
     <!-- Bestsellers Section -->
-    <section class="py-12 bg-white">
+    <section class="py-12 bg-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <div class="flex items-baseline justify-between mb-8">
           <h2 class="text-3xl font-bold">Hot on Socials</h2>
@@ -82,7 +82,7 @@
     </section>
 
     <!-- Bestseller für Dich Section -->
-    <section class="py-12">
+    <section class="py-12" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <div class="flex items-baseline justify-between mb-8">
           <h2 class="text-3xl font-bold">Bestseller für Dich</h2>
@@ -133,7 +133,7 @@
     
 
     <!-- For Corporate Clothing Section -->
-    <section class="py-16 sm:py-24 bg-gray-100">
+    <section class="py-16 sm:py-24 bg-gray-100" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <div class="flex flex-col md:flex-row items-center gap-12">
           <div class="md:w-1/2 order-2 md:order-1 text-center md:text-left">
@@ -155,7 +155,7 @@
 
 
     <!-- Why Us? Section -->
-    <section class="py-16 sm:py-24">
+    <section class="py-16 sm:py-24" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold text-center mb-12">Warum private-shirt.de?</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -170,7 +170,7 @@
       </div>
     </section>
     <!-- Custom Creator CTA Section -->
-    <section class="py-16 sm:py-24 bg-white">
+    <section class="py-16 sm:py-24 bg-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <div class="flex flex-col md:flex-row items-center gap-12">
           <div class="md:w-1/2">
@@ -189,7 +189,7 @@
       </div>
     </section>
     <!-- Trust & Reviews Section -->
-    <section class="py-16 sm:py-24 bg-gradient-to-br from-gray-50 to-white">
+    <section class="py-16 sm:py-24 bg-gradient-to-br from-gray-50 to-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <!-- Header -->
         <div class="text-center mb-16">
@@ -266,7 +266,7 @@
 
     
     <!-- Store Locations Section -->
-    <section id="locations-section" class="py-16 sm:py-24 bg-gray-50">
+    <section id="locations-section" class="py-16 sm:py-24 bg-gray-50" data-aos="fade-up">
       <div class="container mx-auto px-6 text-center">
         <!-- New Pin Needle SVG -->
         <div class="mb-8">

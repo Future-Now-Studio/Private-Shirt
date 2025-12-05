@@ -1,5 +1,5 @@
 <template>
-  <div v-gsap>
+  <div data-aos="fade-up">
     <!-- Hero Section -->
     <section class="relative h-[60vh] md:h-[50vh] flex flex-col lg:flex-row">
       <!-- Left side - White background with brand colors for text -->

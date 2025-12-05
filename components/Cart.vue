@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black/50 z-50" @click.self="$emit('close')" v-gsap>
+  <div v-if="isOpen" class="fixed inset-0 bg-black/50 z-50" @click.self="$emit('close')" data-aos="fade-in">
     <div class="absolute right-0 top-0 h-full w-full md:w-96 bg-white shadow-xl">
       <div class="p-6">
         <div class="flex justify-between items-center mb-6">

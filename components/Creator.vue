@@ -1,5 +1,5 @@
 <template>
-  <div v-gsap>
+  <div data-aos="fade-up">
     <!-- Hero Section -->
     <section class="bg-gradient-to-br from-[#D8127D] to-[#b30f68] text-white py-20">
       <div class="container mx-auto px-6 text-center">
@@ -13,7 +13,7 @@
     </section>
 
     <!-- How It Works Section -->
-    <section ref="howItWorksRef" class="py-16 bg-white">
+    <section ref="howItWorksRef" class="py-16 bg-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold text-center mb-12">So funktioniert unser Creator-Programm</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -49,7 +49,7 @@
     </section>
 
     <!-- Benefits Section -->
-    <section class="py-16 bg-gray-50">
+    <section class="py-16 bg-gray-50" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold text-center mb-12">Warum Creator bei uns werden?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -78,7 +78,7 @@
     </section>
 
     <!-- Success Stories -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold text-center mb-12">Erfolgsgeschichten</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -111,7 +111,7 @@
     </section>
 
     <!-- Signup Form -->
-    <section ref="signupRef" class="py-16 bg-gradient-to-br from-gray-50 to-white">
+    <section ref="signupRef" class="py-16 bg-gradient-to-br from-gray-50 to-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <div class="max-w-2xl mx-auto">
           <h2 class="text-3xl font-bold text-center mb-8">Jetzt Creator werden</h2>
@@ -157,7 +157,7 @@
     </section>
 
     <!-- FAQ Section -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-white" data-aos="fade-up">
       <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold text-center mb-12">Häufige Fragen</h2>
         <div class="max-w-3xl mx-auto space-y-6">

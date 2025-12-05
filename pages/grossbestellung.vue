@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white" v-gsap>
+  <div class="bg-white" data-aos="fade-up">
     <div class="container mx-auto px-6 py-16">
       <div class="max-w-4xl mx-auto">
         <h1 class="text-4xl font-bold text-center mb-4">Großbestellungen für Ihr Business</h1>

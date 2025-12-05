@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto px-6 py-12" v-gsap>
+    <div class="container mx-auto px-6 py-12" data-aos="fade-up">
       <h1 class="text-4xl font-bold mb-2">T-Shirts bedrucken lassen</h1>
       <p class="text-lg text-gray-600 mb-10">100 % dein Style – Wähle dein Lieblingsshirt und gestalte es selbst.</p>
       

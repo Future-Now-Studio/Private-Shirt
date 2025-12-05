@@ -1,5 +1,5 @@
 <template>
-  <section class="py-16 bg-gray-50" v-gsap>
+  <section class="py-16 bg-gray-50" data-aos="fade-up">
     <div class="container mx-auto px-6">
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-3xl font-bold mb-4">Haben Sie Fragen?</h2>
